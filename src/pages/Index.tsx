@@ -1,506 +1,402 @@
-import { useState, useEffect } from "react";
-import Icon from "@/components/ui/icon";
+import { useEffect, useRef, useState } from "react";
 
 const HERO_IMG = "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/dbaa5c73-0240-4ea5-bea3-c62d4c731aa4.jpg";
 const BANYA_IMG = "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/e6eabce6-5423-4098-b714-34056603ca09.jpg";
 const TENT_IMG = "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/40b0f993-22f6-4a32-8478-f6356f984be4.jpg";
 
-const navLinks = [
-  { label: "О месте", href: "#about" },
-  { label: "Услуги", href: "#services" },
-  { label: "Номера", href: "#rooms" },
-  { label: "Отзывы", href: "#reviews" },
-  { label: "Контакты", href: "#contacts" },
-];
+function useReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll(".reveal");
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            obs.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+}
 
-const services = [
-  {
-    icon: "Flame",
-    title: "Баня у моря",
-    desc: "Дровяная баня прямо у кромки воды. Прыгайте в море с горяча — это незабываемо.",
-    tag: "Хит сезона",
-  },
-  {
-    icon: "Anchor",
-    title: "Собственная бухта",
-    desc: "Закрытая бухта с прозрачной водой только для гостей. Никакой толпы, только вы и море.",
-    tag: "Эксклюзив",
-  },
-  {
-    icon: "Waves",
-    title: "Японское море",
-    desc: "Панорамный вид на морские просторы — рассвет над водой запомнится навсегда.",
-    tag: "Природа",
-  },
-  {
-    icon: "Star",
-    title: "Шатры-премиум",
-    desc: "Глэмпинг-шатры с полным комфортом: кровати, отопление, терраса с видом на море.",
-    tag: "Комфорт",
-  },
-  {
-    icon: "Fish",
-    title: "Рыбалка",
-    desc: "Морская рыбалка с берега или лодки. Инструктор, снасти — всё включено.",
-    tag: "Активный отдых",
-  },
-  {
-    icon: "UtensilsCrossed",
-    title: "Морские ужины",
-    desc: "Свежие морепродукты на барбекю с закатом. Краб, гребешок, устрицы прямо с воды.",
-    tag: "Гастро",
-  },
-];
+function useParallax(ref: React.RefObject<HTMLDivElement | null>) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const onScroll = () => {
+      el.style.transform = `scale(1.05) translateY(${window.scrollY * 0.25}px)`;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [ref]);
+}
 
-const rooms = [
-  {
-    title: "Шатёр «Бухта»",
-    price: "от 12 000 ₽",
-    night: "/ ночь",
-    img: TENT_IMG,
-    features: ["Вид на море", "Двуспальная кровать", "Терраса", "Завтрак включён"],
-    badge: "Бестселлер",
-  },
-  {
-    title: "Шатёр «Утёс»",
-    price: "от 9 500 ₽",
-    night: "/ ночь",
-    img: HERO_IMG,
-    features: ["Панорамные окна", "До 4 гостей", "Мангал", "Парковка"],
-    badge: null,
-  },
-  {
-    title: "Пакет «Баня + Шатёр»",
-    price: "от 16 000 ₽",
-    night: "/ ночь",
-    img: BANYA_IMG,
-    features: ["Баня на 3 часа", "Шатёр «Бухта»", "Морепродукты", "Трансфер"],
-    badge: "Топ выбор",
-  },
-];
-
-const reviews = [
-  {
-    name: "Анастасия М.",
-    city: "Владивосток",
-    text: "Были в июле — это просто космос. Баня с видом на закат, потом прыжок в море. Уже бронируем на август снова!",
-    stars: 5,
-    date: "Июль 2025",
-  },
-  {
-    name: "Дмитрий К.",
-    city: "Хабаровск",
-    text: "Приехали с семьёй на 4 дня. Дети в восторге — своя бухта, ни одного постороннего. Шатёр тёплый даже ночью.",
-    stars: 5,
-    date: "Июнь 2025",
-  },
-  {
-    name: "Елена В.",
-    city: "Москва",
-    text: "Летела специально сюда из Москвы — не пожалела. Вид на Японское море с террасы шатра — это моё лучшее фото за год.",
-    stars: 5,
-    date: "Август 2025",
-  },
-];
-
-const stats = [
-  { num: "3", label: "км от трассы" },
-  { num: "8", label: "шатров" },
-  { num: "47", label: "м до моря" },
-  { num: "★ 4.9", label: "рейтинг" },
-];
+const MoonIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+);
+const SunIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="5" />
+    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+  </svg>
+);
 
 export default function Index() {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: "", phone: "", date: "" });
+  const [dark, setDark] = useState(false);
+  const heroBgRef = useRef<HTMLDivElement>(null);
+
+  useReveal();
+  useParallax(heroBgRef);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleScroll = (href: string) => {
-    setMobileOpen(false);
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  }, [dark]);
+
+  const scrollTo = (id: string) => {
+    document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <div className="grain min-h-screen" style={{ backgroundColor: "#08090f", color: "#ede8dc" }}>
+    <>
+      <a href="#main" className="skip-link">Перейти к содержанию</a>
+
       {/* NAV */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "nav-glass" : "bg-transparent"}`}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="font-display text-2xl font-light tracking-wider" style={{ color: "#2dd4bf" }}>
-            БУХТА
-          </div>
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((l) => (
-              <button
-                key={l.href}
-                onClick={() => handleScroll(l.href)}
-                className="font-body text-sm tracking-wide transition-colors duration-300"
-                style={{ color: "#9ba3af" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#2dd4bf")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#9ba3af")}
-              >
-                {l.label}
-              </button>
+      <nav className={`sb-nav${scrolled ? " scrolled" : ""}`}>
+        <div className="sb-nav__inner">
+          <a href="#" className="sb-nav__logo" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M14 3 C8 3 3 8 3 14 C3 20 8 25 14 25 C20 25 25 20 25 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M14 3 C18 8 20 14 14 25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path d="M6 11 Q14 9 22 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <circle cx="22" cy="7" r="3" fill="currentColor" opacity="0.8" />
+            </svg>
+            <span className="sb-nav__logo-text">Синяя Бухта</span>
+          </a>
+          <ul className="sb-nav__links">
+            {[["#services", "Услуги"], ["#reviews", "Отзывы"], ["#trust", "О нас"], ["#cta", "Контакты"]].map(([href, label]) => (
+              <li key={href}>
+                <a href={href} onClick={(e) => { e.preventDefault(); scrollTo(href); }}>{label}</a>
+              </li>
             ))}
-          </div>
-          <button
-            onClick={() => handleScroll("#contacts")}
-            className="hidden md:block btn-primary px-6 py-2.5 rounded-full text-sm font-semibold"
-            style={{ fontFamily: "'Golos Text', sans-serif" }}
-          >
-            <span>Забронировать</span>
-          </button>
-          <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)} style={{ color: "#2dd4bf" }}>
-            <Icon name={mobileOpen ? "X" : "Menu"} size={24} />
-          </button>
-        </div>
-        {mobileOpen && (
-          <div className="md:hidden nav-glass px-6 pb-6 flex flex-col gap-4">
-            {navLinks.map((l) => (
-              <button key={l.href} onClick={() => handleScroll(l.href)} className="text-left py-2 border-b" style={{ borderColor: "rgba(45,212,191,0.1)", color: "#ede8dc" }}>
-                {l.label}
-              </button>
-            ))}
-            <button onClick={() => handleScroll("#contacts")} className="btn-primary px-6 py-3 rounded-full text-sm font-semibold mt-2">
-              <span>Забронировать</span>
+          </ul>
+          <div className="sb-nav__actions">
+            <button className="sb-nav__toggle" onClick={() => setDark(!dark)} aria-label="Сменить тему">
+              {dark ? <SunIcon /> : <MoonIcon />}
             </button>
+            <a href="#cta" className="sb-nav__cta" onClick={(e) => { e.preventDefault(); scrollTo("#cta"); }}>Забронировать</a>
           </div>
-        )}
+        </div>
       </nav>
 
       {/* HERO */}
-      <section className="hero-bg relative min-h-screen flex items-end pb-20">
-        <div className="absolute inset-0">
-          <img src={HERO_IMG} alt="Глэмпинг у Японского моря" className="w-full h-full object-cover" />
-        </div>
-        <div className="absolute left-8 top-1/2 -translate-y-1/2 z-10 hidden lg:block">
-          <p className="vertical-text section-label" style={{ color: "rgba(45,212,191,0.5)" }}>Японское море</p>
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
-          <div className="max-w-3xl">
-            <div className="section-label animate-slide-up mb-6">Приморский край · Японское море</div>
-            <h1 className="font-display animate-slide-up-delay-1 mb-6 leading-none" style={{ fontSize: "clamp(3.5rem, 9vw, 7rem)", fontWeight: 300, color: "#ede8dc" }}>
-              Дикая природа<br />
-              <em className="shimmer-text" style={{ fontStyle: "italic" }}>с комфортом</em>
+      <main id="main">
+        <section className="sb-hero">
+          <div
+            className="sb-hero__bg"
+            ref={heroBgRef}
+            style={{ backgroundImage: `url('${HERO_IMG}')`, backgroundSize: "cover", backgroundPosition: "center" }}
+          />
+          <div className="sb-hero__overlay" />
+          <div className="sb-hero__content">
+            <div className="sb-hero__badge">
+              <span className="sb-hero__badge-dot" />
+              Открытие сезона · Июнь 2026
+            </div>
+            <h1 className="sb-hero__title">
+              Ты уже слышишь,<br /><em>как шумят волны?</em>
             </h1>
-            <p className="animate-slide-up-delay-2 font-body text-lg mb-10 max-w-xl leading-relaxed" style={{ color: "rgba(237,232,220,0.7)" }}>
-              Глэмпинг-шатры на берегу. Баня у воды. Собственная бухта. Вид на Японское море, от которого захватывает дух.
-            </p>
-            <div className="animate-slide-up-delay-3 flex flex-wrap gap-4">
-              <button onClick={() => handleScroll("#contacts")} className="btn-primary relative pulse-ring px-8 py-4 rounded-full text-base" style={{ fontFamily: "'Golos Text', sans-serif" }}>
-                <span>Забронировать шатёр</span>
+            <p className="sb-hero__sub">База отдыха «Синяя Бухта» — твои лучшие дни у Японского моря. Приморский край, прямо на берегу.</p>
+            <div className="sb-hero__meta">
+              <span>Июнь — Октябрь</span>
+              <span className="sb-hero__meta-sep" />
+              <span>Приморский край</span>
+              <span className="sb-hero__meta-sep" />
+              <span>200 м от моря</span>
+            </div>
+            <div className="sb-hero__actions">
+              <button className="sb-btn sb-btn--primary" onClick={() => scrollTo("#cta")}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                Проверить свободные даты
               </button>
-              <button onClick={() => handleScroll("#rooms")} className="px-8 py-4 rounded-full text-base border transition-all duration-300" style={{ borderColor: "rgba(45,212,191,0.3)", color: "#ede8dc", fontFamily: "'Golos Text', sans-serif" }}>
-                Посмотреть номера
-              </button>
+              <button className="sb-btn sb-btn--ghost" onClick={() => scrollTo("#services")}>Посмотреть услуги</button>
             </div>
           </div>
-        </div>
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 scroll-indicator" style={{ color: "rgba(45,212,191,0.5)" }}>
-          <Icon name="ChevronDown" size={28} />
-        </div>
-      </section>
+          <div className="sb-hero__scroll">
+            <span>Листай вниз</span>
+            <div className="sb-hero__scroll-line" />
+          </div>
+        </section>
 
-      {/* STATS */}
-      <section style={{ backgroundColor: "#0d1525", borderTop: "1px solid rgba(45,212,191,0.15)", borderBottom: "1px solid rgba(45,212,191,0.15)" }}>
-        <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="font-display text-4xl md:text-5xl font-light mb-1" style={{ color: "#2dd4bf" }}>{s.num}</div>
-              <div className="font-body text-sm" style={{ color: "rgba(237,232,220,0.5)" }}>{s.label}</div>
+        {/* STATS */}
+        <div className="sb-stats-bar">
+          <div className="sb-stats-bar__inner">
+            {[["4.9", "Рейтинг гостей"], ["70%", "Возвращаются снова"], ["8+", "Лет на рынке"], ["200м", "До пляжа"], ["5000+", "Довольных гостей"]].map(([num, label]) => (
+              <div key={label} className="sb-stats-bar__item">
+                <span className="sb-stats-bar__num">{num}</span>
+                <span className="sb-stats-bar__label">{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* PROBLEM */}
+        <section className="sb-section sb-problem">
+          <div className="sb-container">
+            <div className="sb-problem__grid">
+              <div>
+                <span className="sb-section__eyebrow reveal">Узнаёшь себя?</span>
+                <h2 className="sb-section__title reveal reveal-d1">Ты работаешь без остановки. Твоя семья ждёт.</h2>
+                <p className="sb-section__sub reveal reveal-d2">Каждое лето одно и то же — хочется настоящего отдыха, а получается очередной «отпуск в телефоне».</p>
+                <div className="sb-problem__pains">
+                  {[
+                    ["📱", "Бесконечные рабочие чаты", "Даже в отпуске ты не отключаешься — уведомления не дают покоя"],
+                    ["🏨", "Дорогие отели без атмосферы", "Чувствуешь себя как в аэропорту — всё есть, но ничего не запоминается"],
+                    ["🌊", "Дети у экранов вместо моря", "Приключения откладываются «до следующего лета» снова и снова"],
+                  ].map(([icon, title, desc], i) => (
+                    <div key={String(title)} className={`sb-pain-item reveal reveal-d${i + 1}`}>
+                      <div className="sb-pain-item__icon">{icon}</div>
+                      <div className="sb-pain-item__text">
+                        <strong>{title}</strong>
+                        {desc}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="sb-problem__visual reveal reveal-d2">
+                <img src={BANYA_IMG} alt="Баня у Японского моря" width="600" height="750" loading="lazy" />
+                <div className="sb-problem__visual-badge">
+                  <div className="sb-problem__visual-badge-title">«Приехали на 3 дня — остались на 10»</div>
+                  <div className="sb-problem__visual-badge-sub">Андрей, Хабаровск · Гость 2025 года</div>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* ABOUT */}
-      <section id="about" className="py-24 max-w-7xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <div className="section-label mb-4">О месте</div>
-            <div className="divider-line mb-8"></div>
-            <h2 className="font-display text-5xl md:text-6xl font-light leading-tight mb-8" style={{ color: "#ede8dc" }}>
-              Место, куда<br />
-              <span style={{ color: "#f59e0b" }}>хочется вернуться</span>
-            </h2>
-            <p className="font-body text-base leading-relaxed mb-6" style={{ color: "rgba(237,232,220,0.65)" }}>
-              Мы создали место, где нетронутая природа Приморья встречает люкс-комфорт. Скалы, сосны, Японское море — и ни одного лишнего звука, кроме волн.
+        {/* PLACE */}
+        <section className="sb-section sb-place" id="place">
+          <div className="sb-container--wide">
+            <span className="sb-section__eyebrow reveal">Решение</span>
+            <h2 className="sb-section__title reveal reveal-d1">Место, где время замедляется</h2>
+            <p className="sb-place__lead reveal reveal-d2">
+              <strong>«Синяя Бухта»</strong> — это не просто база отдыха.
+              Это запах морского ветра с утра, костёр под звёздами, свежие морепродукты прямо с лодки
+              и ощущение, что <strong>мир существует только для вас</strong>.
+              Мы открываемся 1 июня — и каждый год наши гости возвращаются.
             </p>
-            <p className="font-body text-base leading-relaxed mb-10" style={{ color: "rgba(237,232,220,0.65)" }}>
-              Наша закрытая бухта — только для гостей. Никаких случайных людей. Только вы, море и небо.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {["Экологичный отдых", "Без толпы", "Круглый год", "Pet-friendly"].map((tag) => (
-                <span key={tag} className="px-4 py-2 rounded-full text-sm font-body" style={{ border: "1px solid rgba(45,212,191,0.2)", color: "#2dd4bf", backgroundColor: "rgba(45,212,191,0.05)" }}>
-                  {tag}
-                </span>
+            <div className="sb-place__bento">
+              <div className="sb-bento-card sb-bento-card--tall reveal">
+                <img className="sb-bento-card__img" src={HERO_IMG} alt="Панорамный вид на бухту Японского моря" width="500" height="800" loading="lazy" />
+                <div className="sb-bento-card__overlay" />
+                <div className="sb-bento-card__label">
+                  <div>Собственная бухта</div>
+                  <div className="sb-bento-card__sub">Закрытый пляж для гостей</div>
+                </div>
+              </div>
+              {([
+                [TENT_IMG, "Вечера у огня", "Костёр + море + звёзды"],
+                [BANYA_IMG, "Баня у моря", "Купели + звёздное небо"],
+                [HERO_IMG, "Водные активности", "SUP, каяки, снорклинг"],
+                [TENT_IMG, "Гастрономия", "Морепродукты с лодки"],
+              ] as const).map(([src, label, sub], i) => (
+                <div key={label} className={`sb-bento-card reveal reveal-d${(i % 2) + 1}`}>
+                  <img className="sb-bento-card__img" src={src} alt={label} width="500" height="300" loading="lazy" />
+                  <div className="sb-bento-card__overlay" />
+                  <div className="sb-bento-card__label">
+                    <div>{label}</div>
+                    <div className="sb-bento-card__sub">{sub}</div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-          <div className="relative">
-            <div className="img-hover-zoom rounded-2xl overflow-hidden" style={{ aspectRatio: "4/5" }}>
-              <img src={BANYA_IMG} alt="Баня у моря" className="w-full h-full object-cover" />
-            </div>
-            <div className="absolute -bottom-6 -left-6 rounded-2xl p-6 shadow-2xl" style={{ backgroundColor: "#0d1525", border: "1px solid rgba(45,212,191,0.2)" }}>
-              <div className="font-display text-3xl font-light mb-1" style={{ color: "#f59e0b" }}>№1</div>
-              <div className="font-body text-sm" style={{ color: "rgba(237,232,220,0.6)" }}>Глэмпинг Приморья</div>
-              <div className="font-body text-xs mt-1" style={{ color: "rgba(237,232,220,0.4)" }}>по отзывам гостей</div>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* SERVICES */}
-      <section id="services" className="py-24" style={{ backgroundColor: "#0a0e1a" }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <div className="section-label mb-4">Что вас ждёт</div>
-            <div className="divider-line mx-auto mb-8" style={{ background: "linear-gradient(90deg, transparent, #2dd4bf, transparent)" }}></div>
-            <h2 className="font-display text-5xl md:text-6xl font-light" style={{ color: "#ede8dc" }}>
-              Наши <em style={{ color: "#2dd4bf", fontStyle: "italic" }}>услуги</em>
-            </h2>
+        {/* SERVICES */}
+        <section className="sb-section sb-services" id="services">
+          <div className="sb-container">
+            <span className="sb-section__eyebrow reveal">Всё включено</span>
+            <h2 className="sb-section__title reveal reveal-d1">Всё, что нужно для идеального отдыха</h2>
+            <div className="sb-services__grid">
+              {([
+                ["🏠", "Размещение", "Уютные домики и глэмпинг-шатры прямо у берега — с кондиционером, душем, мини-кухней и панорамными окнами на море.", "От 3500 ₽/ночь"],
+                ["🌊", "Море и пляж", "Оборудованный пляж, лежаки, зонты, раздевалки. SUP-доски, каяки и снорклинг-маски — в аренду без доплат.", "Включено"],
+                ["🦀", "Гастрономия", "Беседки для BBQ, свежая рыба и морепродукты от местных рыбаков. Мастер-класс «Готовим улов» — каждую субботу.", "Мастер-класс по сб"],
+                ["🔥", "Баня и релакс", "Русская баня с купелью у моря, массаж, чаны под открытым небом. Места разбирают за неделю — записывайтесь заранее.", "Бронировать заранее"],
+                ["🧒", "Детский клуб", "Анимация по выходным, детская площадка, безопасное мелководье. Дети счастливы — родители наконец отдыхают.", "С 3 лет"],
+                ["🎣", "Активности", "Морская рыбалка на рассвете, экскурсии на катере, дайвинг для начинающих, пешие маршруты по бухтам.", "Гид включён"],
+              ] as const).map(([emoji, title, desc, tag], i) => (
+                <article key={title} className={`sb-service-card reveal reveal-d${(i % 3) + 1}`}>
+                  <span className="sb-service-card__emoji">{emoji}</span>
+                  <h3 className="sb-service-card__title">{title}</h3>
+                  <p className="sb-service-card__desc">{desc}</p>
+                  <span className="sb-service-card__tag">{tag}</span>
+                </article>
+              ))}
+            </div>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((s, i) => (
-              <div key={i} className="card-hover rounded-2xl p-8 relative group" style={{ backgroundColor: "#111827", border: "1px solid rgba(45,212,191,0.08)" }}>
-                <div className="number-accent absolute top-4 right-6">0{i + 1}</div>
-                <div className="mb-6 w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: "rgba(45,212,191,0.1)" }}>
-                  <Icon name={s.icon} size={22} style={{ color: "#2dd4bf" }} />
-                </div>
-                <div className="mb-3">
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#f59e0b" }}>
-                    {s.tag}
-                  </span>
-                </div>
-                <h3 className="font-display text-2xl font-light mb-3" style={{ color: "#ede8dc" }}>{s.title}</h3>
-                <p className="font-body text-sm leading-relaxed" style={{ color: "rgba(237,232,220,0.55)" }}>{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ROOMS */}
-      <section id="rooms" className="py-24 max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <div className="section-label mb-4">Размещение</div>
-          <div className="divider-line mx-auto mb-8" style={{ background: "linear-gradient(90deg, transparent, #2dd4bf, transparent)" }}></div>
-          <h2 className="font-display text-5xl md:text-6xl font-light" style={{ color: "#ede8dc" }}>
-            Наши <em style={{ color: "#f59e0b", fontStyle: "italic" }}>шатры</em>
-          </h2>
-        </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          {rooms.map((r, i) => (
-            <div key={i} className="card-hover rounded-2xl overflow-hidden" style={{ backgroundColor: "#111827", border: "1px solid rgba(45,212,191,0.08)" }}>
-              <div className="img-hover-zoom relative" style={{ aspectRatio: "4/3" }}>
-                <img src={r.img} alt={r.title} className="w-full h-full object-cover" />
-                {r.badge && (
-                  <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-semibold font-body" style={{ backgroundColor: "#f59e0b", color: "#08090f" }}>
-                    {r.badge}
-                  </div>
-                )}
-              </div>
-              <div className="p-6">
-                <h3 className="font-display text-2xl font-light mb-4" style={{ color: "#ede8dc" }}>{r.title}</h3>
-                <ul className="mb-6 space-y-2">
-                  {r.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2 font-body text-sm" style={{ color: "rgba(237,232,220,0.6)" }}>
-                      <Icon name="Check" size={14} style={{ color: "#2dd4bf", flexShrink: 0 }} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex items-end justify-between">
-                  <div>
-                    <div className="font-display text-3xl font-light" style={{ color: "#2dd4bf" }}>{r.price}</div>
-                    <div className="font-body text-xs mt-0.5" style={{ color: "rgba(237,232,220,0.4)" }}>{r.night}</div>
-                  </div>
-                  <button
-                    onClick={() => document.querySelector("#contacts")?.scrollIntoView({ behavior: "smooth" })}
-                    className="btn-primary px-5 py-2.5 rounded-full text-sm"
-                  >
-                    <span>Забронировать</span>
+        {/* DESIRE */}
+        <section className="sb-section sb-desire">
+          <div className="sb-desire__decor" />
+          <div className="sb-container">
+            <div className="sb-desire__inner">
+              <div>
+                <h2 className="sb-desire__title reveal">Представь: завтра утром…</h2>
+                <div className="sb-desire__scene reveal reveal-d1">
+                  <p>Ты просыпаешься от звука волн. Выходишь на веранду — <strong>стакан горячего кофе, туман над бухтой, тишина.</strong></p>
+                  <p>Дети ещё спят. Впереди — весь день у моря.</p>
+                  <p><strong>Никаких совещаний. Никаких дедлайнов. Только это.</strong></p>
+                  <p style={{ marginTop: "1.5rem" }}>Именно за этим к нам возвращаются каждое лето. Именно за этим стоит забронировать прямо сейчас.</p>
+                </div>
+                <div style={{ marginTop: "2rem" }} className="reveal reveal-d2">
+                  <button className="sb-btn sb-btn--primary" onClick={() => scrollTo("#cta")}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                    Хочу туда
                   </button>
                 </div>
               </div>
+              <blockquote className="sb-desire__quote reveal reveal-d2">
+                <div className="sb-desire__quote-stars">★★★★★</div>
+                <p className="sb-desire__quote-text">«Лучший отдых за 5 лет. Дети не хотели уезжать, мы тоже. Уже забронировали на следующее лето.»</p>
+                <footer className="sb-desire__quote-author">— Марина К., Владивосток · Август 2025</footer>
+              </blockquote>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* REVIEWS */}
-      <section id="reviews" className="py-24" style={{ backgroundColor: "#0a0e1a" }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <div className="section-label mb-4">Отзывы гостей</div>
-            <div className="divider-line mx-auto mb-8" style={{ background: "linear-gradient(90deg, transparent, #2dd4bf, transparent)" }}></div>
-            <h2 className="font-display text-5xl md:text-6xl font-light" style={{ color: "#ede8dc" }}>
-              Что говорят<br />
-              <em style={{ color: "#2dd4bf", fontStyle: "italic" }}>наши гости</em>
-            </h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {reviews.map((r, i) => (
-              <div key={i} className="rounded-2xl p-8 flex flex-col" style={{ backgroundColor: "#111827", border: "1px solid rgba(45,212,191,0.08)" }}>
-                <div className="flex gap-1 mb-6">
-                  {Array.from({ length: r.stars }).map((_, j) => (
-                    <Icon key={j} name="Star" size={16} style={{ color: "#f59e0b", fill: "#f59e0b" }} />
-                  ))}
-                </div>
-                <p className="font-body text-base leading-relaxed flex-1 mb-6" style={{ color: "rgba(237,232,220,0.7)", fontStyle: "italic" }}>
-                  «{r.text}»
-                </p>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-body font-semibold text-sm" style={{ color: "#ede8dc" }}>{r.name}</div>
-                    <div className="font-body text-xs mt-0.5" style={{ color: "rgba(237,232,220,0.4)" }}>{r.city}</div>
-                  </div>
-                  <div className="font-body text-xs" style={{ color: "rgba(237,232,220,0.3)" }}>{r.date}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA BANNER */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={HERO_IMG} alt="" className="w-full h-full object-cover opacity-30" />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(8,9,15,0.9), rgba(13,21,37,0.85))" }} />
-        </div>
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <div className="section-label mb-6">Ограниченное количество мест</div>
-          <h2 className="font-display text-5xl md:text-7xl font-light leading-tight mb-6" style={{ color: "#ede8dc" }}>
-            Лето бронируют<br />
-            <span className="shimmer-text">прямо сейчас</span>
-          </h2>
-          <p className="font-body text-lg mb-10" style={{ color: "rgba(237,232,220,0.6)" }}>
-            Успейте забронировать шатёр на лучшие даты — мест всего 8.
-          </p>
-          <button
-            onClick={() => document.querySelector("#contacts")?.scrollIntoView({ behavior: "smooth" })}
-            className="btn-primary relative pulse-ring px-10 py-5 rounded-full text-lg font-semibold"
-          >
-            <span>Узнать свободные даты</span>
-          </button>
-        </div>
-      </section>
-
-      {/* CONTACTS */}
-      <section id="contacts" className="py-24" style={{ backgroundColor: "#0d1525" }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
-            <div>
-              <div className="section-label mb-4">Контакты</div>
-              <div className="divider-line mb-8"></div>
-              <h2 className="font-display text-5xl md:text-6xl font-light mb-8 leading-tight" style={{ color: "#ede8dc" }}>
-                Свяжитесь<br />
-                <em style={{ color: "#2dd4bf", fontStyle: "italic" }}>с нами</em>
-              </h2>
-              <div className="space-y-6">
-                {[
-                  { icon: "Phone", label: "Телефон", value: "+7 (XXX) XXX-XX-XX" },
-                  { icon: "MessageCircle", label: "WhatsApp / Telegram", value: "@glamping_buchta" },
-                  { icon: "MapPin", label: "Адрес", value: "Приморский край, Японское море" },
-                  { icon: "Clock", label: "Заезд / Выезд", value: "Заезд 14:00 · Выезд 12:00" },
-                ].map((c) => (
-                  <div key={c.label} className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: "rgba(45,212,191,0.1)" }}>
-                      <Icon name={c.icon} size={18} style={{ color: "#2dd4bf" }} />
-                    </div>
+        {/* REVIEWS */}
+        <section className="sb-section sb-reviews" id="reviews">
+          <div className="sb-container">
+            <span className="sb-section__eyebrow reveal">Отзывы</span>
+            <h2 className="sb-section__title reveal reveal-d1">Нам доверяют</h2>
+            <p className="sb-section__sub reveal reveal-d2">Реальные отзывы гостей сезона 2025. Каждый третий отдыхающий — наш повторный гость.</p>
+            <div className="sb-reviews__grid">
+              {([
+                ["Д", "Дмитрий Р.", "Хабаровск · Июль 2025", "Баня у моря в 23:00, звёздное небо, тишина — это не описать словами. Семья кайфовала всю неделю. Спасибо за незабываемые впечатления!"],
+                ["К", "Семья Кузнецовых", "Владивосток · Август 2025", "Приезжаем третий год подряд. Место как будто живёт своей жизнью — здесь помнят тебя, помнят детей. Это дорогого стоит."],
+                ["Е", "Елена М.", "Уссурийск · Сентябрь 2025", "Взяли глэмпинг-шатёр — это отдельное счастье. Засыпать под звук прибоя, просыпаться с видом на море. Мечта, которая сбылась."],
+              ] as const).map(([letter, name, city, text], i) => (
+                <article key={name} className={`sb-review-card reveal reveal-d${i + 1}`}>
+                  <div className="sb-review-card__stars">★★★★★</div>
+                  <p className="sb-review-card__text">«{text}»</p>
+                  <div className="sb-review-card__author">
+                    <div className="sb-review-card__avatar">{letter}</div>
                     <div>
-                      <div className="font-body text-xs mb-1" style={{ color: "rgba(237,232,220,0.4)" }}>{c.label}</div>
-                      <div className="font-body text-base" style={{ color: "#ede8dc" }}>{c.value}</div>
+                      <div className="sb-review-card__name">{name}</div>
+                      <div className="sb-review-card__city">{city}</div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-2xl p-8" style={{ backgroundColor: "#111827", border: "1px solid rgba(45,212,191,0.12)" }}>
-              <h3 className="font-display text-3xl font-light mb-2" style={{ color: "#ede8dc" }}>Оставить заявку</h3>
-              <p className="font-body text-sm mb-8" style={{ color: "rgba(237,232,220,0.45)" }}>Мы перезвоним в течение часа</p>
-              <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-                <div>
-                  <label className="font-body text-xs mb-2 block" style={{ color: "rgba(237,232,220,0.45)" }}>Ваше имя</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Как вас зовут?"
-                    className="w-full px-4 py-3.5 rounded-xl font-body text-sm outline-none transition-all duration-300"
-                    style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(45,212,191,0.15)", color: "#ede8dc" }}
-                    onFocus={(e) => (e.target.style.borderColor = "rgba(45,212,191,0.5)")}
-                    onBlur={(e) => (e.target.style.borderColor = "rgba(45,212,191,0.15)")}
-                  />
-                </div>
-                <div>
-                  <label className="font-body text-xs mb-2 block" style={{ color: "rgba(237,232,220,0.45)" }}>Телефон</label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+7 (___) ___-__-__"
-                    className="w-full px-4 py-3.5 rounded-xl font-body text-sm outline-none transition-all duration-300"
-                    style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(45,212,191,0.15)", color: "#ede8dc" }}
-                    onFocus={(e) => (e.target.style.borderColor = "rgba(45,212,191,0.5)")}
-                    onBlur={(e) => (e.target.style.borderColor = "rgba(45,212,191,0.15)")}
-                  />
-                </div>
-                <div>
-                  <label className="font-body text-xs mb-2 block" style={{ color: "rgba(237,232,220,0.45)" }}>Желаемые даты</label>
-                  <input
-                    type="text"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    placeholder="Например: 15–18 июля"
-                    className="w-full px-4 py-3.5 rounded-xl font-body text-sm outline-none transition-all duration-300"
-                    style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(45,212,191,0.15)", color: "#ede8dc" }}
-                    onFocus={(e) => (e.target.style.borderColor = "rgba(45,212,191,0.5)")}
-                    onBlur={(e) => (e.target.style.borderColor = "rgba(45,212,191,0.15)")}
-                  />
-                </div>
-                <button type="submit" className="btn-primary w-full py-4 rounded-xl font-semibold font-body text-base mt-2">
-                  <span>Отправить заявку</span>
-                </button>
-                <p className="text-center font-body text-xs" style={{ color: "rgba(237,232,220,0.3)" }}>
-                  Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности
-                </p>
-              </form>
+                </article>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* TRUST */}
+        <section className="sb-section sb-trust" id="trust">
+          <div className="sb-container">
+            <span className="sb-section__eyebrow reveal">Цифры и факты</span>
+            <h2 className="sb-section__title reveal reveal-d1">Почему выбирают нас</h2>
+            <div className="sb-trust__grid">
+              {([
+                ["4.9/5.0", "Средняя оценка за сезон 2025"],
+                ["70%", "Гостей возвращаются каждый год"],
+                ["Май", "Бронирования на июль закрываются в мае"],
+                ["8 лет", "На рынке туризма Приморья"],
+              ] as const).map(([num, label], i) => (
+                <div key={label} className={`sb-trust-item reveal reveal-d${i + 1}`}>
+                  <div className="sb-trust-item__num">{num}</div>
+                  <div className="sb-trust-item__label">{label}</div>
+                </div>
+              ))}
+            </div>
+            <div className="sb-trust__guarantees">
+              {["Бесплатная отмена за 14 дней", "Фиксированная цена без доплат", "Трансфер от вокзала по запросу", "Ответ за 15 минут в Telegram"].map((g) => (
+                <div key={g} className="sb-guarantee reveal">
+                  <span className="sb-guarantee__icon">✓</span>
+                  {g}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="sb-cta" id="cta">
+          <div className="sb-cta__inner">
+            <span className="sb-cta__eyebrow">Лето начинается 1 июня</span>
+            <h2 className="sb-cta__title reveal">Ваше место ещё свободно?</h2>
+            <p className="sb-cta__sub reveal reveal-d1">Июль и август уже на 80% забронированы. Лучшие домики у воды уходят первыми — не откладывайте на завтра.</p>
+            <div className="sb-cta__urgency reveal reveal-d2">
+              <span className="sb-cta__urgency-text">Занято:</span>
+              <div className="sb-cta__urgency-bar">
+                <div className="sb-cta__urgency-fill" />
+              </div>
+              <span className="sb-cta__urgency-text">80% мест на август</span>
+            </div>
+            <div className="sb-cta__actions reveal reveal-d2">
+              <a href="tel:+79999999999" className="sb-btn sb-btn--white">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+                Позвонить сейчас
+              </a>
+              <a href="https://t.me/sinyayabuhta" className="sb-btn sb-btn--outline-white" target="_blank" rel="noopener noreferrer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z" />
+                </svg>
+                Написать в Telegram
+              </a>
+            </div>
+            <div className="sb-cta__contacts reveal reveal-d3">
+              <div className="sb-cta-contact">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+                <a href="tel:+79999999999">+7 (999) 999-99-99</a>
+              </div>
+              <div className="sb-cta-contact">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span>Работаем 7 дней, 9:00 – 21:00</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
 
       {/* FOOTER */}
-      <footer className="py-10" style={{ backgroundColor: "#08090f", borderTop: "1px solid rgba(45,212,191,0.1)" }}>
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="font-display text-2xl font-light" style={{ color: "#2dd4bf" }}>БУХТА</div>
-          <p className="font-body text-xs text-center" style={{ color: "rgba(237,232,220,0.3)" }}>
-            © 2025 Глэмпинг «Бухта» · Приморский край · Японское море
-          </p>
-          <div className="flex gap-6">
-            {navLinks.slice(0, 3).map((l) => (
-              <button
-                key={l.href}
-                onClick={() => handleScroll(l.href)}
-                className="font-body text-xs transition-colors"
-                style={{ color: "rgba(237,232,220,0.35)" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#2dd4bf")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(237,232,220,0.35)")}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
+      <footer className="sb-footer">
+        <div className="sb-container">
+          <div className="sb-footer__logo">Синяя Бухта</div>
+          <p>База отдыха у Японского моря · Приморский край<br />Сезон: Июнь — Октябрь · © 2026 Все права защищены</p>
         </div>
       </footer>
-    </div>
+    </>
   );
 }
