@@ -3,6 +3,7 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import psycopg2
 
 
 CORS = {
@@ -35,6 +36,18 @@ def handler(event: dict, context) -> dict:
             "headers": CORS,
             "body": json.dumps({"error": "Имя и телефон обязательны"}, ensure_ascii=False),
         }
+
+    schema = os.environ.get("MAIN_DB_SCHEMA", "public")
+    conn = psycopg2.connect(os.environ["DATABASE_URL"])
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"INSERT INTO {schema}.bookings (name, phone, dates) VALUES (%s, %s, %s)",
+                (name, phone, dates or None)
+            )
+        conn.commit()
+    finally:
+        conn.close()
 
     to_email = os.environ.get("CONTACT_EMAIL", "")
     smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
