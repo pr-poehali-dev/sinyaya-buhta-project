@@ -50,8 +50,8 @@ def handler(event: dict, context) -> dict:
         conn.close()
 
     to_email = os.environ.get("CONTACT_EMAIL", "")
-    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+    smtp_host = os.environ.get("SMTP_HOST", "smtp.mail.ru")
+    smtp_port = int(os.environ.get("SMTP_PORT", "465"))
     smtp_user = os.environ.get("SMTP_USER", "")
     smtp_pass = os.environ.get("SMTP_PASS", "")
 
@@ -74,8 +74,7 @@ def handler(event: dict, context) -> dict:
         msg["From"] = smtp_user
         msg["To"] = to_email
         msg.attach(MIMEText(html_body, "html", "utf-8"))
-        with smtplib.SMTP(smtp_host, smtp_port) as server:
-            server.starttls()
+        with smtplib.SMTP_SSL(smtp_host, smtp_port) as server:
             server.login(smtp_user, smtp_pass)
             server.sendmail(smtp_user, to_email, msg.as_string())
 
