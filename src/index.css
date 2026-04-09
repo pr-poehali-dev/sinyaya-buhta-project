@@ -877,6 +877,13 @@ a {
   color: var(--color-primary);
   flex-shrink: 0;
 }
+.sb-review-card__avatar--photo {
+  object-fit: cover;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border);
+}
 .sb-review-card__name {
   font-weight: 600;
   font-size: var(--text-sm);
