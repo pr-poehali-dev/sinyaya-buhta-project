@@ -1568,13 +1568,14 @@ a {
 
   /* Hero */
   .sb-hero__content {
-    padding: 0 1.25rem;
+    padding: 5rem 1.25rem 3rem;
   }
   .sb-hero__title {
-    font-size: clamp(2rem, 9vw, 3rem);
+    font-size: clamp(1.9rem, 9vw, 3rem);
   }
   .sb-hero__sub {
     font-size: var(--text-base);
+    max-width: 100%;
   }
   .sb-hero__scroll {
     display: none;
@@ -1715,5 +1716,167 @@ a {
   .sb-container,
   .sb-container--wide {
     padding-inline: 1rem;
+  }
+}
+
+/* ===== iPhone 5s / 320px ===== */
+@media (max-width: 360px) {
+  /* Nav — компактнее */
+  .sb-nav__inner {
+    padding-inline: 0.75rem;
+    gap: 0.5rem;
+  }
+  .sb-nav__logo-text {
+    font-size: 0.9rem;
+  }
+
+  /* Контейнеры */
+  .sb-container,
+  .sb-container--wide {
+    padding-inline: 0.75rem;
+  }
+
+  /* Hero — не давить высотой */
+  .sb-hero__content {
+    padding: 4rem 0.75rem 2.5rem;
+    gap: 1rem;
+  }
+  .sb-hero__title {
+    font-size: clamp(1.7rem, 10vw, 2.2rem);
+    line-height: 1.1;
+  }
+  .sb-hero__sub {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .sb-hero__badge {
+    font-size: 0.6rem;
+    padding: 0.35rem 0.75rem;
+  }
+  .sb-hero__meta {
+    font-size: 0.75rem;
+    gap: 0.3rem;
+  }
+  .sb-btn {
+    font-size: 0.85rem;
+    padding: 0.65rem 1rem;
+  }
+
+  /* Секции */
+  .sb-section {
+    padding: 2.5rem 0;
+  }
+  .sb-section__title {
+    font-size: 1.4rem;
+    line-height: 1.2;
+  }
+  .sb-section__sub {
+    font-size: 0.85rem;
+  }
+
+  /* Stats */
+  .sb-stats-bar__num {
+    font-size: 1.1rem;
+  }
+  .sb-stats-bar__label {
+    font-size: 0.55rem;
+  }
+  .sb-stats-bar__item {
+    padding: 0.6rem 0.25rem;
+  }
+
+  /* Pain items */
+  .sb-pain-item__icon {
+    font-size: 1.5rem;
+  }
+
+  /* Service cards */
+  .sb-service-card {
+    padding: 1rem;
+  }
+  .sb-service-card__emoji {
+    font-size: 1.5rem;
+  }
+  .sb-service-card__title {
+    font-size: 1rem;
+  }
+  .sb-service-card__desc {
+    font-size: 0.8rem;
+  }
+
+  /* Portfolio tabs */
+  .sb-ptab {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  /* Portfolio masonry */
+  .sb-portfolio__masonry {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 180px;
+  }
+  .sb-portfolio__grid .sb-pcard {
+    height: 180px;
+  }
+
+  /* Reviews */
+  .sb-carousel {
+    gap: 0.5rem;
+  }
+  .sb-review-card--carousel {
+    padding: 1rem;
+    min-height: unset;
+  }
+  .sb-review-card__text {
+    font-size: 0.8rem;
+  }
+
+  /* Trust */
+  .sb-trust-item__num {
+    font-size: 1.5rem;
+  }
+  .sb-trust-item__label {
+    font-size: 0.75rem;
+  }
+  .sb-guarantee {
+    font-size: 0.8rem;
+  }
+
+  /* CTA */
+  .sb-cta__title {
+    font-size: 1.4rem;
+  }
+  .sb-cta__sub {
+    font-size: 0.85rem;
+  }
+  .sb-cta__layout {
+    padding-inline: 0.75rem;
+  }
+
+  /* Form */
+  .sb-form__input {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.75rem;
+  }
+  .sb-form__label {
+    font-size: 0.75rem;
+  }
+
+  /* Mobile menu */
+  .sb-nav__mobile {
+    padding: 0.75rem 0.75rem 1rem;
+  }
+  .sb-nav__mobile-link {
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+  }
+
+  /* Footer */
+  .sb-footer {
+    padding: 1.5rem 0.75rem;
+    font-size: 0.75rem;
+  }
+  .sb-footer__logo {
+    font-size: 1rem;
   }
 }
