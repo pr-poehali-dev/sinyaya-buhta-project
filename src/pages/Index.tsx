@@ -143,6 +143,7 @@ function ReviewsCarousel() {
 export default function Index() {
   const [scrolled, setScrolled] = useState(false);
   const [dark, setDark] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const heroBgRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({ name: "", phone: "", dates: "", message: "" });
@@ -229,8 +230,22 @@ export default function Index() {
               {dark ? <SunIcon /> : <MoonIcon />}
             </button>
             <a href="#cta" className="sb-nav__cta" onClick={(e) => { e.preventDefault(); scrollTo("#cta"); }}>Забронировать</a>
+            <button className="sb-nav__burger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Меню" aria-expanded={menuOpen}>
+              <span className={`sb-burger${menuOpen ? " sb-burger--open" : ""}`}>
+                <span /><span /><span />
+              </span>
+            </button>
           </div>
         </div>
+        {/* MOBILE MENU */}
+        {menuOpen && (
+          <div className="sb-nav__mobile">
+            {[["#services", "Услуги"], ["#reviews", "Отзывы"], ["#trust", "О нас"], ["#cta", "Контакты"]].map(([href, label]) => (
+              <a key={href} href={href} className="sb-nav__mobile-link" onClick={(e) => { e.preventDefault(); scrollTo(href); setMenuOpen(false); }}>{label}</a>
+            ))}
+            <a href="#cta" className="sb-btn sb-btn--primary" style={{ marginTop: "0.5rem" }} onClick={(e) => { e.preventDefault(); scrollTo("#cta"); setMenuOpen(false); }}>Забронировать</a>
+          </div>
+        )}
       </nav>
 
       {/* HERO */}
