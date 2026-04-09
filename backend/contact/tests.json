@@ -1,0 +1,26 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Missing required fields",
+      "method": "POST",
+      "path": "/",
+      "body": {"message": "Привет"},
+      "expectedStatus": 422
+    },
+    {
+      "name": "Valid submission",
+      "method": "POST",
+      "path": "/",
+      "body": {"name": "Иван", "phone": "+79001234567", "dates": "10-15 июля", "message": "Хочу забронировать домик"},
+      "expectedStatus": 200,
+      "expectedBody": {"ok": true},
+      "bodyMatcher": "partial"
+    }
+  ]
+}

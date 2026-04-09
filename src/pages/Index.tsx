@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, FormEvent } from "react";
+
+const CONTACT_URL = "https://functions.poehali.dev/05e2f825-a9d7-46b4-990d-b9db281dcff5";
 
 const HERO_IMG = "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/dbaa5c73-0240-4ea5-bea3-c62d4c731aa4.jpg";
 const BANYA_IMG = "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/e6eabce6-5423-4098-b714-34056603ca09.jpg";
@@ -51,6 +53,44 @@ export default function Index() {
   const [scrolled, setScrolled] = useState(false);
   const [dark, setDark] = useState(false);
   const heroBgRef = useRef<HTMLDivElement>(null);
+
+  const [formData, setFormData] = useState({ name: "", phone: "", dates: "", message: "" });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.name.trim()) errors.name = "Введите имя";
+    if (!formData.phone.trim()) errors.phone = "Введите телефон";
+    return errors;
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
+    setFormErrors({});
+    setFormStatus("loading");
+    try {
+      const res = await fetch(CONTACT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        setFormStatus("success");
+      } else {
+        setFormStatus("error");
+      }
+    } catch {
+      setFormStatus("error");
+    }
+  };
+
+  const setField = (field: string, value: string) => {
+    setFormData((p) => ({ ...p, [field]: value }));
+    if (formErrors[field]) setFormErrors((p) => { const n = { ...p }; delete n[field]; return n; });
+  };
 
   useReveal();
   useParallax(heroBgRef);
@@ -347,44 +387,113 @@ export default function Index() {
 
         {/* CTA */}
         <section className="sb-cta" id="cta">
-          <div className="sb-cta__inner">
-            <span className="sb-cta__eyebrow">Лето начинается 1 июня</span>
-            <h2 className="sb-cta__title reveal">Ваше место ещё свободно?</h2>
-            <p className="sb-cta__sub reveal reveal-d1">Июль и август уже на 80% забронированы. Лучшие домики у воды уходят первыми — не откладывайте на завтра.</p>
-            <div className="sb-cta__urgency reveal reveal-d2">
-              <span className="sb-cta__urgency-text">Занято:</span>
-              <div className="sb-cta__urgency-bar">
-                <div className="sb-cta__urgency-fill" />
+          <div className="sb-cta__layout">
+            {/* LEFT — контакты */}
+            <div className="sb-cta__left">
+              <span className="sb-cta__eyebrow">Лето начинается 1 июня</span>
+              <h2 className="sb-cta__title reveal">Ваше место ещё свободно?</h2>
+              <p className="sb-cta__sub reveal reveal-d1" style={{ marginInline: 0 }}>Июль и август уже на 80% забронированы. Лучшие домики у воды уходят первыми.</p>
+              <div className="sb-cta__urgency reveal reveal-d2" style={{ justifyContent: "flex-start" }}>
+                <span className="sb-cta__urgency-text">Занято:</span>
+                <div className="sb-cta__urgency-bar">
+                  <div className="sb-cta__urgency-fill" />
+                </div>
+                <span className="sb-cta__urgency-text">80% на август</span>
               </div>
-              <span className="sb-cta__urgency-text">80% мест на август</span>
+              <div className="sb-cta__actions reveal reveal-d2" style={{ justifyContent: "flex-start" }}>
+                <a href="tel:+79999999999" className="sb-btn sb-btn--white">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                  Позвонить
+                </a>
+                <a href="https://t.me/sinyayabuhta" className="sb-btn sb-btn--outline-white" target="_blank" rel="noopener noreferrer">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z" />
+                  </svg>
+                  Telegram
+                </a>
+              </div>
+              <div className="sb-cta__contacts reveal reveal-d3">
+                <div className="sb-cta-contact">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <span>Работаем 7 дней, 9:00 – 21:00</span>
+                </div>
+              </div>
             </div>
-            <div className="sb-cta__actions reveal reveal-d2">
-              <a href="tel:+79999999999" className="sb-btn sb-btn--white">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                </svg>
-                Позвонить сейчас
-              </a>
-              <a href="https://t.me/sinyayabuhta" className="sb-btn sb-btn--outline-white" target="_blank" rel="noopener noreferrer">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z" />
-                </svg>
-                Написать в Telegram
-              </a>
-            </div>
-            <div className="sb-cta__contacts reveal reveal-d3">
-              <div className="sb-cta-contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                </svg>
-                <a href="tel:+79999999999">+7 (999) 999-99-99</a>
-              </div>
-              <div className="sb-cta-contact">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-                </svg>
-                <span>Работаем 7 дней, 9:00 – 21:00</span>
-              </div>
+
+            {/* RIGHT — форма */}
+            <div className="sb-cta__right reveal reveal-d2">
+              {formStatus === "success" ? (
+                <div className="sb-form__success">
+                  <div className="sb-form__success-icon">🎉</div>
+                  <div className="sb-form__success-title">Заявка принята!</div>
+                  <div className="sb-form__success-sub">Мы свяжемся с вами в течение 15 минут и подберём лучший вариант.</div>
+                </div>
+              ) : (
+                <>
+                  <div style={{ marginBottom: "0.25rem", fontSize: "var(--text-xs)", textTransform: "uppercase", letterSpacing: "0.12em", color: "rgba(255,255,255,0.55)" }}>Оставить заявку</div>
+                  <h3 style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-xl)", color: "white", marginBottom: "0.25rem" }}>Напишите нам</h3>
+                  <p style={{ fontSize: "var(--text-sm)", color: "rgba(255,255,255,0.65)", marginBottom: "0.5rem" }}>Ответим за 15 минут и забронируем лучшие даты</p>
+                  <form className="sb-form" onSubmit={handleSubmit} noValidate>
+                    <div className="sb-form__row">
+                      <div className="sb-form__group">
+                        <label className="sb-form__label" htmlFor="f-name">Имя *</label>
+                        <input
+                          id="f-name"
+                          className={`sb-form__input${formErrors.name ? " sb-error" : ""}`}
+                          type="text"
+                          placeholder="Иван"
+                          value={formData.name}
+                          onChange={(e) => setField("name", e.target.value)}
+                        />
+                        {formErrors.name && <span className="sb-form__err">{formErrors.name}</span>}
+                      </div>
+                      <div className="sb-form__group">
+                        <label className="sb-form__label" htmlFor="f-phone">Телефон *</label>
+                        <input
+                          id="f-phone"
+                          className={`sb-form__input${formErrors.phone ? " sb-error" : ""}`}
+                          type="tel"
+                          placeholder="+7 900 000-00-00"
+                          value={formData.phone}
+                          onChange={(e) => setField("phone", e.target.value)}
+                        />
+                        {formErrors.phone && <span className="sb-form__err">{formErrors.phone}</span>}
+                      </div>
+                    </div>
+                    <div className="sb-form__group">
+                      <label className="sb-form__label" htmlFor="f-dates">Желаемые даты</label>
+                      <input
+                        id="f-dates"
+                        className="sb-form__input"
+                        type="text"
+                        placeholder="Например: 15–22 июля"
+                        value={formData.dates}
+                        onChange={(e) => setField("dates", e.target.value)}
+                      />
+                    </div>
+                    <div className="sb-form__group">
+                      <label className="sb-form__label" htmlFor="f-msg">Комментарий</label>
+                      <textarea
+                        id="f-msg"
+                        className="sb-form__textarea"
+                        placeholder="Сколько человек, нужен ли трансфер, пожелания..."
+                        value={formData.message}
+                        onChange={(e) => setField("message", e.target.value)}
+                      />
+                    </div>
+                    {formStatus === "error" && (
+                      <p className="sb-form__err">Не удалось отправить. Попробуйте ещё раз или позвоните нам.</p>
+                    )}
+                    <button type="submit" className="sb-btn sb-btn--primary sb-form__submit" disabled={formStatus === "loading"}>
+                      {formStatus === "loading" ? "Отправляем…" : "Отправить заявку →"}
+                    </button>
+                  </form>
+                </>
+              )}
             </div>
           </div>
         </section>
