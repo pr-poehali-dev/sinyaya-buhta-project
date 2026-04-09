@@ -64,6 +64,7 @@ function ReviewsCarousel() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const total = REVIEWS.length;
+  const touchStartX = useRef<number | null>(null);
 
   const next = useCallback(() => setActive((p) => (p + 1) % total), [total]);
   const prev = useCallback(() => setActive((p) => (p - 1 + total) % total), [total]);
@@ -74,6 +75,18 @@ function ReviewsCarousel() {
     return () => clearInterval(t);
   }, [paused, next]);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    setPaused(true);
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) { if (diff > 0) next(); else prev(); }
+    touchStartX.current = null;
+    setPaused(false);
+  };
+
   const [letter, name, city, text] = REVIEWS[active];
 
   return (
@@ -83,7 +96,13 @@ function ReviewsCarousel() {
         <h2 className="sb-section__title reveal reveal-d1">Нам доверяют</h2>
         <p className="sb-section__sub reveal reveal-d2">Реальные отзывы гостей сезона 2025. Каждый третий отдыхающий — наш повторный гость.</p>
 
-        <div className="sb-carousel" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+        <div
+          className="sb-carousel"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <button className="sb-carousel__arrow sb-carousel__arrow--prev" onClick={prev} aria-label="Предыдущий отзыв">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
           </button>
