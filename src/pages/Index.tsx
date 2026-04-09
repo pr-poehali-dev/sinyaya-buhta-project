@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, FormEvent } from "react";
+import { useEffect, useRef, useState, FormEvent, useCallback } from "react";
 
 const CONTACT_URL = "https://functions.poehali.dev/05e2f825-a9d7-46b4-990d-b9db281dcff5";
 
@@ -48,6 +48,77 @@ const SunIcon = () => (
     <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
   </svg>
 );
+
+const REVIEWS = [
+  ["Д", "Дмитрий Р.", "Хабаровск · Июль 2025", "Баня у моря в 23:00, звёздное небо, тишина — это не описать словами. Семья кайфовала всю неделю. Спасибо за незабываемые впечатления!"],
+  ["К", "Семья Кузнецовых", "Владивосток · Август 2025", "Приезжаем третий год подряд. Место как будто живёт своей жизнью — здесь помнят тебя, помнят детей. Это дорогого стоит."],
+  ["Е", "Елена М.", "Уссурийск · Сентябрь 2025", "Взяли глэмпинг-шатёр — это отдельное счастье. Засыпать под звук прибоя, просыпаться с видом на море. Мечта, которая сбылась."],
+  ["С", "Сергей Т.", "Владивосток · Август 2025", "Ездили с женой без детей, первый раз за 4 года вдвоём. Взяли домик с видом на море — это было что-то. Утром кофе на веранде, вечером в баню, потом купаться в море. Вот так и надо отдыхать. Уже присматриваем даты на июль."],
+  ["Н", "Наталья В.", "Находка · Июль 2025", "Приехали с тремя детьми и боялись, что будет хаос. Всё оказалось наоборот — дети носились по пляжу с утра до вечера, аниматоры на выходных, мелководье безопасное. Мы с мужем реально отдохнули, первый раз за долгое время. Спасибо огромное!"],
+  ["А", "Алексей К.", "Хабаровск · Сентябрь 2025", "Бархатный сезон — огонь. Людей меньше, море тёплое, цены чуть ниже. Рыбачил каждое утро с местным гидом — такого краба я ещё нигде не ел. Вечером сами готовили на мангале. Вот это я понимаю — отдых."],
+  ["И", "Ирина М.", "Уссурийск · Июнь 2025", "Глэмпинг-шатёр с прозрачной стенкой — это вообще отдельная история. Засыпаешь, а перед тобой море и звёзды. Проснулась в 5 утра от рассвета — не пожалела ни секунды. Подруге уже скинула ссылку, едем вместе в августе."],
+  ["Р", "Роман Д.", "Артём · Август 2025", "Честно — не ожидал такого уровня за эти деньги. Всё чисто, персонал не навязывается но всегда рядом, еда свежая. Взял SUP первый раз в жизни — понравилось. На следующий день уже два часа катался сам. Вернусь точно, уже не вопрос."],
+] as const;
+
+function ReviewsCarousel() {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const total = REVIEWS.length;
+
+  const next = useCallback(() => setActive((p) => (p + 1) % total), [total]);
+  const prev = useCallback(() => setActive((p) => (p - 1 + total) % total), [total]);
+
+  useEffect(() => {
+    if (paused) return;
+    const t = setInterval(next, 5000);
+    return () => clearInterval(t);
+  }, [paused, next]);
+
+  const [letter, name, city, text] = REVIEWS[active];
+
+  return (
+    <section className="sb-section sb-reviews" id="reviews">
+      <div className="sb-container">
+        <span className="sb-section__eyebrow reveal">Отзывы</span>
+        <h2 className="sb-section__title reveal reveal-d1">Нам доверяют</h2>
+        <p className="sb-section__sub reveal reveal-d2">Реальные отзывы гостей сезона 2025. Каждый третий отдыхающий — наш повторный гость.</p>
+
+        <div className="sb-carousel" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+          <button className="sb-carousel__arrow sb-carousel__arrow--prev" onClick={prev} aria-label="Предыдущий отзыв">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+          </button>
+
+          <article className="sb-review-card sb-review-card--carousel" key={active}>
+            <div className="sb-review-card__stars">★★★★★</div>
+            <p className="sb-review-card__text">«{text}»</p>
+            <div className="sb-review-card__author">
+              <div className="sb-review-card__avatar">{letter}</div>
+              <div>
+                <div className="sb-review-card__name">{name}</div>
+                <div className="sb-review-card__city">{city}</div>
+              </div>
+            </div>
+          </article>
+
+          <button className="sb-carousel__arrow sb-carousel__arrow--next" onClick={next} aria-label="Следующий отзыв">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+          </button>
+        </div>
+
+        <div className="sb-carousel__dots">
+          {REVIEWS.map((_, i) => (
+            <button
+              key={i}
+              className={`sb-carousel__dot${i === active ? " sb-carousel__dot--active" : ""}`}
+              onClick={() => setActive(i)}
+              aria-label={`Отзыв ${i + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function Index() {
   const [scrolled, setScrolled] = useState(false);
@@ -329,37 +400,7 @@ export default function Index() {
         </section>
 
         {/* REVIEWS */}
-        <section className="sb-section sb-reviews" id="reviews">
-          <div className="sb-container">
-            <span className="sb-section__eyebrow reveal">Отзывы</span>
-            <h2 className="sb-section__title reveal reveal-d1">Нам доверяют</h2>
-            <p className="sb-section__sub reveal reveal-d2">Реальные отзывы гостей сезона 2025. Каждый третий отдыхающий — наш повторный гость.</p>
-            <div className="sb-reviews__grid">
-              {([
-                ["Д", "Дмитрий Р.", "Хабаровск · Июль 2025", "Баня у моря в 23:00, звёздное небо, тишина — это не описать словами. Семья кайфовала всю неделю. Спасибо за незабываемые впечатления!"],
-                ["К", "Семья Кузнецовых", "Владивосток · Август 2025", "Приезжаем третий год подряд. Место как будто живёт своей жизнью — здесь помнят тебя, помнят детей. Это дорогого стоит."],
-                ["Е", "Елена М.", "Уссурийск · Сентябрь 2025", "Взяли глэмпинг-шатёр — это отдельное счастье. Засыпать под звук прибоя, просыпаться с видом на море. Мечта, которая сбылась."],
-                ["С", "Сергей Т.", "Владивосток · Август 2025", "Ездили с женой без детей, первый раз за 4 года вдвоём. Взяли домик с видом на море — это было что-то. Утром кофе на веранде, вечером в баню, потом купаться в море. Вот так и надо отдыхать. Уже присматриваем даты на июль."],
-                ["Н", "Наталья В.", "Находка · Июль 2025", "Приехали с тремя детьми и боялись, что будет хаос. Всё оказалось наоборот — дети носились по пляжу с утра до вечера, аниматоры на выходных, мелководье безопасное. Мы с мужем реально отдохнули, первый раз за долгое время. Спасибо огромное!"],
-                ["А", "Алексей К.", "Хабаровск · Сентябрь 2025", "Бархатный сезон — огонь. Людей меньше, море тёплое, цены чуть ниже. Рыбачил каждое утро с местным гидом — такого краба я ещё нигде не ел. Вечером сами готовили на мангале. Вот это я понимаю — отдых."],
-                ["И", "Ирина М.", "Уссурийск · Июнь 2025", "Глэмпинг-шатёр с прозрачной стенкой — это вообще отдельная история. Засыпаешь, а перед тобой море и звёзды. Проснулась в 5 утра от рассвета — не пожалела ни секунды. Подруге уже скинула ссылку, едем вместе в августе."],
-                ["Р", "Роман Д.", "Артём · Август 2025", "Честно — не ожидал такого уровня за эти деньги. Всё чисто, персонал не навязывается но всегда рядом, еда свежая. Взял SUP первый раз в жизни — понравилось. На следующий день уже два часа катался сам. Вернусь точно, уже не вопрос."],
-              ] as const).map(([letter, name, city, text], i) => (
-                <article key={name} className={`sb-review-card reveal reveal-d${i + 1}`}>
-                  <div className="sb-review-card__stars">★★★★★</div>
-                  <p className="sb-review-card__text">«{text}»</p>
-                  <div className="sb-review-card__author">
-                    <div className="sb-review-card__avatar">{letter}</div>
-                    <div>
-                      <div className="sb-review-card__name">{name}</div>
-                      <div className="sb-review-card__city">{city}</div>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
+        <ReviewsCarousel />
 
         {/* TRUST */}
         <section className="sb-section sb-trust" id="trust">

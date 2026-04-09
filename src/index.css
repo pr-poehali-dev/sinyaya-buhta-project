@@ -886,6 +886,75 @@ a {
   color: var(--color-text-faint);
 }
 
+/* ===== CAROUSEL ===== */
+.sb-carousel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+.sb-review-card--carousel {
+  flex: 1;
+  min-height: 200px;
+  animation: carousel-fade 0.4s ease;
+}
+@keyframes carousel-fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.sb-carousel__arrow {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    box-shadow var(--transition);
+}
+.sb-carousel__arrow:hover {
+  background: var(--color-surface-2);
+  box-shadow: var(--shadow-md);
+}
+.sb-carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+.sb-carousel__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  border: none;
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    width var(--transition);
+}
+.sb-carousel__dot--active {
+  background: var(--color-primary);
+  width: 24px;
+}
+@media (max-width: 480px) {
+  .sb-carousel__arrow {
+    display: none;
+  }
+}
+
 /* ===== TRUST ===== */
 .sb-trust {
   background: var(--color-surface);
