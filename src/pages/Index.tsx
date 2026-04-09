@@ -430,7 +430,7 @@ export default function Index() {
                 <div className="sb-form__success">
                   <div className="sb-form__success-icon">🎉</div>
                   <div className="sb-form__success-title">Заявка принята!</div>
-                  <div className="sb-form__success-sub">Мы свяжемся с вами в течение часа и подберём лучший вариант.</div>
+                  <div className="sb-form__success-sub">Мы свяжемся с вами в течение 15 минут и подберём лучший вариант.</div>
                 </div>
               ) : (
                 <>
