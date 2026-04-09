@@ -475,16 +475,6 @@ export default function Index() {
                         onChange={(e) => setField("dates", e.target.value)}
                       />
                     </div>
-                    <div className="sb-form__group">
-                      <label className="sb-form__label" htmlFor="f-msg">Комментарий</label>
-                      <textarea
-                        id="f-msg"
-                        className="sb-form__textarea"
-                        placeholder="Сколько человек, нужен ли трансфер, пожелания..."
-                        value={formData.message}
-                        onChange={(e) => setField("message", e.target.value)}
-                      />
-                    </div>
                     {formStatus === "error" && (
                       <p className="sb-form__err">Не удалось отправить. Попробуйте ещё раз или позвоните нам.</p>
                     )}
