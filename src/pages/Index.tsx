@@ -50,6 +50,75 @@ const SunIcon = () => (
   </svg>
 );
 
+const VIDEO_REVIEWS = [
+  {
+    name: "Дмитрий Р.",
+    city: "Хабаровск · Июль 2025",
+    preview: "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/28b22e13-fc2c-4f7e-8957-e4fb1cbc73ef.jpg",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  },
+  {
+    name: "Семья Кузнецовых",
+    city: "Владивосток · Август 2025",
+    preview: "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/76ceed6b-e83b-443d-bdbe-e0216f7a7116.jpg",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  },
+  {
+    name: "Елена М.",
+    city: "Уссурийск · Сентябрь 2025",
+    preview: "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/44040b2c-0c7e-4441-8885-0572bdfcab7d.jpg",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  },
+];
+
+function VideoReviews() {
+  const [activeVideo, setActiveVideo] = useState<number | null>(null);
+
+  return (
+    <section className="sb-section sb-video-reviews">
+      <div className="sb-container">
+        <span className="sb-section__eyebrow reveal">Видео-отзывы</span>
+        <h2 className="sb-section__title reveal reveal-d1">Гости рассказывают сами</h2>
+        <p className="sb-section__sub reveal reveal-d2">Живые видео от реальных гостей — без сценария и монтажа.</p>
+        <div className="sb-video-reviews__grid">
+          {VIDEO_REVIEWS.map((v, i) => (
+            <div key={i} className="sb-video-card reveal" style={{ animationDelay: `${i * 0.1}s` }}>
+              <div className="sb-video-card__frame" onClick={() => setActiveVideo(i)}>
+                {activeVideo === i ? (
+                  <iframe
+                    src={`${v.videoUrl}?autoplay=1`}
+                    title={`Видео-отзыв — ${v.name}`}
+                    frameBorder="0"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                    className="sb-video-card__iframe"
+                  />
+                ) : (
+                  <>
+                    <img src={v.preview} alt={v.name} className="sb-video-card__preview" />
+                    <button className="sb-video-card__play" aria-label="Смотреть видео">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5,3 19,12 5,21" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+              </div>
+              <div className="sb-video-card__author">
+                <img src={v.preview} alt={v.name} className="sb-review-card__avatar sb-review-card__avatar--photo" />
+                <div>
+                  <div className="sb-review-card__name">{v.name}</div>
+                  <div className="sb-review-card__city">{v.city}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const REVIEWS = [
   ["Дмитрий Р.", "Хабаровск · Июль 2025", "Баня у моря в 23:00, звёздное небо, тишина — это не описать словами. Семья кайфовала всю неделю. Спасибо за незабываемые впечатления!", "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/28b22e13-fc2c-4f7e-8957-e4fb1cbc73ef.jpg"],
   ["Семья Кузнецовых", "Владивосток · Август 2025", "Приезжаем третий год подряд. Место как будто живёт своей жизнью — здесь помнят тебя, помнят детей. Это дорогого стоит.", "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/76ceed6b-e83b-443d-bdbe-e0216f7a7116.jpg"],
@@ -436,6 +505,9 @@ export default function Index() {
             </div>
           </div>
         </section>
+
+        {/* VIDEO REVIEWS */}
+        <VideoReviews />
 
         {/* REVIEWS */}
         <ReviewsCarousel />
