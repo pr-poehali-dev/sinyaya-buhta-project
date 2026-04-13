@@ -3,7 +3,7 @@ import { useState } from "react";
 const CDN = "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files";
 
 const ALL_ITEMS = [
-  { tab: "all", tag: "Главное",       title: "Наша закрытая бухта",      desc: "Только для гостей базы — никакой толпы.",                             img: `${CDN}/d391f06c-129d-49cb-b572-7832b8e7a4a9.jpg`, tall: true },
+  { tab: "all", tag: "Главное",       title: "Наша закрытая бухта",      desc: "Только для гостей базы — никакой толпы.",                             img: "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/bucket/70f16428-6053-4f03-a507-264e39e97fe7.jpeg", tall: true },
   { tab: "all", tag: "Размещение",    title: "Глэмпинг-шатёр",           desc: "Прозрачная стена — море прямо из постели.",                           img: `${CDN}/2913f81d-03da-4493-8039-45a5091c13cf.jpg`, chips: ["от 5 500 ₽", "2 места"] },
   { tab: "all", tag: "Гастрономия",   title: "Краб прямо с лодки",       desc: "Рыбаки привозят улов к нашему пирсу каждое утро.",                    img: `${CDN}/61980d80-7310-4cf6-afee-dfb11e1053d8.jpg` },
   { tab: "all", tag: "Релакс",        title: "Баня с купелью",           desc: "Берёзовый пар + ледяная купель + звёздное небо.",                     img: `${CDN}/ce49564e-1703-4a36-84d7-aa8c6279e80d.jpg` },
