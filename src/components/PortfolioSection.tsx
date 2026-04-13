@@ -1,49 +1,61 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const BEFORE_IMG = "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/bucket/eaf97534-4000-4043-bda7-9cc247d1be55.jpeg";
 const AFTER_IMG  = "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/bucket/70f16428-6053-4f03-a507-264e39e97fe7.jpeg";
 
 function BeforeAfterCard({ tag, title, desc }: { tag: string; title: string; desc: string }) {
-  const [pos, setPos] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
-  const dragging = useRef(false);
+  const afterRef = useRef<HTMLDivElement>(null);
+  const dividerRef = useRef<HTMLDivElement>(null);
+  const active = useRef(false);
 
-  const calcPos = useCallback((clientX: number) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-    setPos((x / rect.width) * 100);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const setPos = (clientX: number) => {
+      const rect = el.getBoundingClientRect();
+      const pct = Math.max(2, Math.min(98, ((clientX - rect.left) / rect.width) * 100));
+      if (afterRef.current)   afterRef.current.style.width   = `${pct}%`;
+      if (dividerRef.current) dividerRef.current.style.left  = `${pct}%`;
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      active.current = true;
+      el.setPointerCapture(e.pointerId);
+      setPos(e.clientX);
+    };
+    const onPointerMove = (e: PointerEvent) => {
+      if (!active.current) return;
+      e.preventDefault();
+      setPos(e.clientX);
+    };
+    const onPointerUp = () => { active.current = false; };
+
+    el.addEventListener("pointerdown", onPointerDown);
+    el.addEventListener("pointermove", onPointerMove, { passive: false });
+    el.addEventListener("pointerup", onPointerUp);
+    el.addEventListener("pointercancel", onPointerUp);
+
+    return () => {
+      el.removeEventListener("pointerdown", onPointerDown);
+      el.removeEventListener("pointermove", onPointerMove);
+      el.removeEventListener("pointerup", onPointerUp);
+      el.removeEventListener("pointercancel", onPointerUp);
+    };
   }, []);
-
-  const onMouseDown = () => { dragging.current = true; };
-  const onMouseMove = (e: React.MouseEvent) => { if (dragging.current) calcPos(e.clientX); };
-  const onMouseUp = () => { dragging.current = false; };
-
-  const onTouchMove = (e: React.TouchEvent) => { calcPos(e.touches[0].clientX); };
 
   return (
     <article className="sb-pcard sb-pcard--tall reveal">
-      <div
-        ref={containerRef}
-        className="sb-ba"
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
-        onMouseLeave={onMouseUp}
-        onTouchMove={onTouchMove}
-      >
+      <div ref={containerRef} className="sb-ba">
         <img className="sb-ba__img sb-ba__img--before" src={BEFORE_IMG} alt="До" draggable={false} />
-        <div className="sb-ba__after" style={{ width: `${pos}%` }}>
+        <div ref={afterRef} className="sb-ba__after" style={{ width: "50%" }}>
           <img className="sb-ba__img sb-ba__img--after" src={AFTER_IMG} alt="После" draggable={false} />
         </div>
-        <div className="sb-ba__divider" style={{ left: `${pos}%` }}>
+        <div ref={dividerRef} className="sb-ba__divider" style={{ left: "50%" }}>
           <div className="sb-ba__handle">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
           </div>
         </div>
         <span className="sb-ba__label sb-ba__label--before">Промышленная гавань</span>
