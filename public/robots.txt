@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://sinyaya-buhta-project.poehali.dev/sitemap.xml
