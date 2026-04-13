@@ -50,24 +50,35 @@ const SunIcon = () => (
   </svg>
 );
 
-const VIDEO_REVIEWS = [
+type VideoReview = {
+  name: string;
+  city: string;
+  preview: string;
+  videoUrl: string;
+  type?: "native" | "embed";
+};
+
+const VIDEO_REVIEWS: VideoReview[] = [
   {
     name: "Дмитрий Р.",
     city: "Хабаровск · Июль 2025",
     preview: "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/28b22e13-fc2c-4f7e-8957-e4fb1cbc73ef.jpg",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoUrl: "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/bucket/becab8b8-cd6c-432b-8604-b41e2ecda08d.MOV",
+    type: "native",
   },
   {
     name: "Семья Кузнецовых",
     city: "Владивосток · Август 2025",
     preview: "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/76ceed6b-e83b-443d-bdbe-e0216f7a7116.jpg",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    type: "embed",
   },
   {
     name: "Елена М.",
     city: "Уссурийск · Сентябрь 2025",
     preview: "https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/files/44040b2c-0c7e-4441-8885-0572bdfcab7d.jpg",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    type: "embed",
   },
 ];
 
@@ -85,14 +96,24 @@ function VideoReviews() {
             <div key={i} className="sb-video-card reveal" style={{ animationDelay: `${i * 0.1}s` }}>
               <div className="sb-video-card__frame" onClick={() => setActiveVideo(i)}>
                 {activeVideo === i ? (
-                  <iframe
-                    src={`${v.videoUrl}?autoplay=1`}
-                    title={`Видео-отзыв — ${v.name}`}
-                    frameBorder="0"
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen
-                    className="sb-video-card__iframe"
-                  />
+                  v.type === "native" ? (
+                    <video
+                      src={v.videoUrl}
+                      autoPlay
+                      controls
+                      playsInline
+                      className="sb-video-card__iframe"
+                    />
+                  ) : (
+                    <iframe
+                      src={`${v.videoUrl}?autoplay=1`}
+                      title={`Видео-отзыв — ${v.name}`}
+                      frameBorder="0"
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                      className="sb-video-card__iframe"
+                    />
+                  )
                 ) : (
                   <>
                     <img src={v.preview} alt={v.name} className="sb-video-card__preview" />
