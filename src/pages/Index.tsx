@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, FormEvent, useCallback } from "react";
 import PortfolioSection from "@/components/PortfolioSection";
+import LegalModal from "@/components/LegalModal";
 
 const CONTACT_URL = "https://functions.poehali.dev/05e2f825-a9d7-46b4-990d-b9db281dcff5";
 
@@ -239,6 +240,8 @@ export default function Index() {
   const [formData, setFormData] = useState({ name: "", phone: "", dates: "", message: "" });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [legalOpen, setLegalOpen] = useState<"privacy" | "consent" | null>(null);
+  const [consentChecked, setConsentChecked] = useState(false);
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
@@ -655,7 +658,25 @@ export default function Index() {
                     {formStatus === "error" && (
                       <p className="sb-form__err">Не удалось отправить. Попробуйте ещё раз или позвоните нам.</p>
                     )}
-                    <button type="submit" className="sb-btn sb-btn--primary sb-form__submit" disabled={formStatus === "loading"}>
+                    <label className="sb-form__consent">
+                      <input
+                        type="checkbox"
+                        checked={consentChecked}
+                        onChange={(e) => setConsentChecked(e.target.checked)}
+                        className="sb-form__consent-check"
+                      />
+                      <span>
+                        Я согласен(на) с{" "}
+                        <button type="button" className="sb-form__consent-link" onClick={() => setLegalOpen("consent")}>
+                          обработкой персональных данных
+                        </button>{" "}
+                        и{" "}
+                        <button type="button" className="sb-form__consent-link" onClick={() => setLegalOpen("privacy")}>
+                          политикой конфиденциальности
+                        </button>
+                      </span>
+                    </label>
+                    <button type="submit" className="sb-btn sb-btn--primary sb-form__submit" disabled={formStatus === "loading" || !consentChecked}>
                       {formStatus === "loading" ? "Отправляем…" : "Отправить заявку →"}
                     </button>
                   </form>
@@ -673,6 +694,8 @@ export default function Index() {
           <p>База отдыха у Японского моря · Приморский край<br />Сезон: Июнь — Октябрь · © 2026 Все права защищены</p>
         </div>
       </footer>
+
+      <LegalModal open={legalOpen} onClose={() => setLegalOpen(null)} />
     </>
   );
 }
