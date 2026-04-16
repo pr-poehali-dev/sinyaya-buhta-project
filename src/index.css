@@ -1798,6 +1798,17 @@ a {
   line-height: 1.7;
 }
 
+/* ===== PARALLAX IMG ===== */
+.parallax-wrap {
+  overflow: hidden;
+}
+.parallax-img {
+  will-change: transform;
+  transform: scale(1.12) translateY(0px);
+  transition: transform 0.05s linear;
+  transform-origin: center center;
+}
+
 /* ===== REVEAL IMG (clip bottom-to-top) ===== */
 .reveal-img {
   overflow: hidden;

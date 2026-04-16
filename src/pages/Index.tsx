@@ -40,6 +40,23 @@ function useParallax(ref: React.RefObject<HTMLDivElement | null>) {
   }, [ref]);
 }
 
+function useImgParallax() {
+  useEffect(() => {
+    const imgs = document.querySelectorAll<HTMLElement>(".parallax-img");
+    const onScroll = () => {
+      imgs.forEach((img) => {
+        const rect = img.closest(".parallax-wrap")?.getBoundingClientRect();
+        if (!rect) return;
+        const center = rect.top + rect.height / 2 - window.innerHeight / 2;
+        img.style.transform = `scale(1.12) translateY(${center * 0.12}px)`;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+}
+
 const MoonIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
@@ -277,6 +294,7 @@ export default function Index() {
   };
 
   useReveal();
+  useImgParallax();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -422,8 +440,8 @@ export default function Index() {
                   ))}
                 </div>
               </div>
-              <div className="sb-problem__visual reveal reveal-d2 reveal-img">
-                <img src={BANYA_IMG} alt="Баня у Японского моря" width="600" height="750" loading="lazy" />
+              <div className="sb-problem__visual reveal reveal-d2 reveal-img parallax-wrap">
+                <img src={BANYA_IMG} alt="Баня у Японского моря" width="600" height="750" loading="lazy" className="parallax-img" />
                 <div className="sb-problem__visual-badge">
                   <div className="sb-problem__visual-badge-title">«Приехали на 3 дня — остались на 10»</div>
                   <div className="sb-problem__visual-badge-sub">Андрей, Хабаровск · Гость 2025 года</div>
@@ -445,8 +463,8 @@ export default function Index() {
               Мы открываемся 1 июня — и каждый год наши гости возвращаются.
             </p>
             <div className="sb-place__bento">
-              <div className="sb-bento-card sb-bento-card--tall reveal reveal-img">
-                <img className="sb-bento-card__img" src={HERO_IMG} alt="Панорамный вид на бухту Японского моря" width="500" height="800" loading="lazy" />
+              <div className="sb-bento-card sb-bento-card--tall reveal reveal-img parallax-wrap">
+                <img className="sb-bento-card__img parallax-img" src={HERO_IMG} alt="Панорамный вид на бухту Японского моря" width="500" height="800" loading="lazy" />
                 <div className="sb-bento-card__overlay" />
                 <div className="sb-bento-card__label">
                   <div>Собственная бухта</div>
@@ -459,8 +477,8 @@ export default function Index() {
                 [HERO_IMG, "Водные активности", "SUP, каяки, снорклинг"],
                 [TENT_IMG, "Гастрономия", "Морепродукты с лодки"],
               ] as const).map(([src, label, sub], i) => (
-                <div key={label} className={`sb-bento-card reveal reveal-img reveal-d${(i % 2) + 1}`}>
-                  <img className="sb-bento-card__img" src={src} alt={label} width="500" height="300" loading="lazy" />
+                <div key={label} className={`sb-bento-card reveal reveal-img parallax-wrap reveal-d${(i % 2) + 1}`}>
+                  <img className="sb-bento-card__img parallax-img" src={src} alt={label} width="500" height="300" loading="lazy" />
                   <div className="sb-bento-card__overlay" />
                   <div className="sb-bento-card__label">
                     <div>{label}</div>
