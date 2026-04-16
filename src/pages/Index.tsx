@@ -343,7 +343,7 @@ export default function Index() {
         <section className="sb-hero">
           <video
             className="sb-hero__video"
-            src="https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/bucket/becab8b8-cd6c-432b-8604-b41e2ecda08d.MOV"
+            src="https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/bucket/5031335d-9dae-498a-90b0-cf85eb6fab29.mp4"
             autoPlay
             muted
             loop
