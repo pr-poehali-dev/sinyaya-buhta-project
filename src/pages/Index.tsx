@@ -707,7 +707,8 @@ export default function Index() {
         className="float-consult"
       >
         <span className="float-consult__icon">💬</span>
-        <span className="float-consult__text">Бесплатная консультация</span>
+        <span>Бесплатная консультация</span>
+        <i className="float-consult__arrow">→</i>
       </a>
     </>
   );

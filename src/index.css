@@ -2264,63 +2264,114 @@ a {
 }
 
 /* ===== FLOAT CONSULT BUTTON ===== */
-@keyframes floatPulse {
+@keyframes fcBounce {
   0%,
   100% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-10px) scale(1.06);
+  }
+  60% {
+    transform: translateY(-4px) scale(1.02);
+  }
+}
+@keyframes fcRing {
+  0% {
     box-shadow:
-      0 6px 28px rgba(26, 107, 122, 0.5),
-      0 0 0 0 rgba(26, 107, 122, 0.35);
+      0 0 0 0 rgba(232, 160, 74, 0.7),
+      0 0 0 0 rgba(232, 160, 74, 0.4);
   }
   50% {
     box-shadow:
-      0 8px 36px rgba(26, 107, 122, 0.6),
-      0 0 0 10px rgba(26, 107, 122, 0);
+      0 0 0 14px rgba(232, 160, 74, 0),
+      0 0 0 28px rgba(232, 160, 74, 0);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(232, 160, 74, 0),
+      0 0 0 0 rgba(232, 160, 74, 0);
+  }
+}
+@keyframes fcShine {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+@keyframes fcArrow {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px);
   }
 }
 
 .float-consult {
   position: fixed;
-  bottom: 1.75rem;
-  right: 1.75rem;
+  bottom: 2rem;
+  right: 2rem;
   z-index: 9000;
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.8rem 1.35rem;
+  gap: 0.6rem;
+  padding: 1rem 1.6rem;
   background: linear-gradient(
-    135deg,
-    var(--color-primary),
-    var(--color-primary-hover)
+    105deg,
+    #f0a030 0%,
+    #e8a04a 30%,
+    #fff5d6 50%,
+    #e8a04a 70%,
+    #c97820 100%
   );
-  color: white;
+  background-size: 200% auto;
+  color: #1a1510;
   font-family: var(--font-body);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   text-decoration: none;
   border-radius: 9999px;
-  animation: floatPulse 2.8s ease-in-out infinite;
+  border: 2px solid rgba(255, 220, 100, 0.6);
+  animation:
+    fcBounce 2.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite,
+    fcRing 2.4s ease-out infinite,
+    fcShine 3s linear infinite;
   transition:
-    transform 0.2s,
-    background 0.2s;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
+    transform 0.15s,
+    filter 0.15s;
+  cursor: pointer;
+  user-select: none;
 }
 .float-consult:hover {
-  transform: translateY(-3px) scale(1.03);
-  background: linear-gradient(135deg, #1e7d8e, var(--color-primary));
+  animation: fcShine 1.2s linear infinite;
+  transform: scale(1.08) translateY(-4px);
+  filter: brightness(1.1);
+  box-shadow: 0 12px 40px rgba(232, 160, 74, 0.7);
 }
 .float-consult__icon {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   line-height: 1;
+  flex-shrink: 0;
+}
+.float-consult__arrow {
+  display: inline-block;
+  animation: fcArrow 1s ease-in-out infinite;
+  font-style: normal;
 }
 
 @media (max-width: 480px) {
   .float-consult {
     bottom: 1rem;
     right: 1rem;
-    padding: 0.7rem 1.1rem;
+    padding: 0.8rem 1.2rem;
     font-size: 0.75rem;
+    gap: 0.45rem;
   }
 }
 
