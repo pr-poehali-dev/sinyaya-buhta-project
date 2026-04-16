@@ -1797,6 +1797,27 @@ a {
   font-size: var(--text-xs);
   line-height: 1.7;
 }
+.sb-footer__tg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: var(--text-xs);
+  text-decoration: none;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.2s;
+}
+.sb-footer__tg:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.07);
+}
 
 /* ===== PARALLAX IMG ===== */
 .parallax-wrap {

@@ -711,6 +711,12 @@ export default function Index() {
         <div className="sb-container">
           <div className="sb-footer__logo">Синяя Бухта</div>
           <p>База отдыха у Японского моря · Приморский край<br />Сезон: Июнь — Октябрь · © 2026 Все права защищены</p>
+          <a href="https://t.me/sinyayabuhta" target="_blank" rel="noopener noreferrer" className="sb-footer__tg">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.32 14.617l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.828.942z"/>
+            </svg>
+            Telegram
+          </a>
         </div>
       </footer>
 
