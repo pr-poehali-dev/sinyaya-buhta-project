@@ -698,6 +698,17 @@ export default function Index() {
 
       <LegalModal open={legalOpen} onClose={() => setLegalOpen(null)} />
       <PromoModal />
+
+      {/* Плавающая кнопка */}
+      <a
+        href="https://t.me/VBHFHLJFVIHGBFH_Bot"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="float-consult"
+      >
+        <span className="float-consult__icon">💬</span>
+        <span className="float-consult__text">Бесплатная консультация</span>
+      </a>
     </>
   );
 }
