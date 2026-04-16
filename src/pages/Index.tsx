@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, FormEvent, useCallback } from "react";
 import PortfolioSection from "@/components/PortfolioSection";
 import LegalModal from "@/components/LegalModal";
-import SunsetBg from "@/components/SunsetParallax";
 
 const CONTACT_URL = "https://functions.poehali.dev/05e2f825-a9d7-46b4-990d-b9db281dcff5";
 
@@ -342,7 +341,14 @@ export default function Index() {
       {/* HERO */}
       <main id="main">
         <section className="sb-hero">
-          <SunsetBg />
+          <video
+            className="sb-hero__video"
+            src="https://cdn.poehali.dev/projects/905f43c3-9796-484a-b6a4-5fdc230be13e/bucket/becab8b8-cd6c-432b-8604-b41e2ecda08d.MOV"
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
           <div className="sb-hero__overlay" />
           <div className="sb-hero__content">
             <div className="sb-hero__badge">

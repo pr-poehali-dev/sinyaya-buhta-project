@@ -293,6 +293,16 @@ a {
   transform: scale(1.05);
   will-change: transform;
 }
+.sb-hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+}
 .sb-hero__overlay {
   position: absolute;
   inset: 0;
