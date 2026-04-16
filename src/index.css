@@ -1560,71 +1560,133 @@ a {
   opacity: 0.8;
 }
 
-/* ===== SUNSET PARALLAX ===== */
-.sb-sunset {
-  position: relative;
-  width: 100%;
-  height: clamp(180px, 28vw, 340px);
-  overflow: hidden;
-  margin-top: -2px;
-  background: #071829;
-}
-.sb-sunset__svg {
+/* ===== SUNSET BG ===== */
+.sb-sunset-bg {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  will-change: transform;
-}
-.sb-sunset__svg g {
-  will-change: transform;
-}
-
-/* CSS-анимированные волны поверх SVG */
-.sb-sunset__wave-anim {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 38%;
+  z-index: 0;
   pointer-events: none;
   overflow: hidden;
 }
-.sb-sunset__wave {
-  position: absolute;
-  bottom: 0;
-  left: -50%;
-  width: 200%;
+.sb-sunset-bg__svg {
+  width: 100%;
   height: 100%;
-  border-radius: 40%;
-  animation: sbWaveSpin linear infinite;
-  transform-origin: 50% 48%;
-  opacity: 0.06;
+  display: block;
 }
-.sb-sunset__wave--1 {
-  background: #4a9bd4;
-  animation-duration: 14s;
-  bottom: -6%;
+
+/* Звёзды — мигание */
+.ss-star {
+  animation: ssStar ease-in-out infinite alternate;
 }
-.sb-sunset__wave--2 {
-  background: #2a7ab8;
-  animation-duration: 20s;
-  animation-direction: reverse;
-  bottom: -10%;
-  opacity: 0.05;
+@keyframes ssStar {
+  from {
+    opacity: 0.1;
+  }
+  to {
+    opacity: 0.5;
+  }
 }
-.sb-sunset__wave--3 {
-  background: #1a5a95;
-  animation-duration: 26s;
-  bottom: -14%;
-  opacity: 0.04;
+
+/* Облака — медленный дрейф */
+.ss-clouds-slow {
+  animation: ssCloudDrift1 60s linear infinite;
 }
-@keyframes sbWaveSpin {
+.ss-clouds-fast {
+  animation: ssCloudDrift2 40s linear infinite;
+}
+@keyframes ssCloudDrift1 {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(60px);
+  }
+}
+@keyframes ssCloudDrift2 {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-45px);
+  }
+}
+
+/* Солнце — лёгкое покачивание / пульсация */
+.ss-sun {
+  animation: ssSunPulse 8s ease-in-out infinite alternate;
+  transform-origin: 720px 520px;
+}
+@keyframes ssSunPulse {
+  from {
+    filter: drop-shadow(0 0 18px #ffb03088);
+  }
+  to {
+    filter: drop-shadow(0 0 38px #ffcc5588);
+  }
+}
+
+/* Лучи — ротация */
+.ss-rays {
+  animation: ssRaysSpin 24s linear infinite;
+  transform-origin: 720px 520px;
+}
+@keyframes ssRaysSpin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Блик на воде — покачивание */
+.ss-glare {
+  animation: ssGlareShimmer 4s ease-in-out infinite alternate;
+  transform-origin: 720px 560px;
+}
+@keyframes ssGlareShimmer {
+  from {
+    opacity: 0.55;
+    transform: scaleX(0.92);
+  }
+  to {
+    opacity: 0.85;
+    transform: scaleX(1.08);
+  }
+}
+
+/* Волны — горизонтальный дрейф */
+.ss-wave--1 {
+  animation: ssWave1 9s ease-in-out infinite alternate;
+}
+.ss-wave--2 {
+  animation: ssWave2 13s ease-in-out infinite alternate;
+}
+.ss-wave--3 {
+  animation: ssWave3 17s ease-in-out infinite alternate;
+}
+@keyframes ssWave1 {
+  from {
+    transform: translateX(-18px);
+  }
+  to {
+    transform: translateX(18px);
+  }
+}
+@keyframes ssWave2 {
+  from {
+    transform: translateX(12px);
+  }
+  to {
+    transform: translateX(-22px);
+  }
+}
+@keyframes ssWave3 {
+  from {
+    transform: translateX(-8px);
+  }
+  to {
+    transform: translateX(16px);
   }
 }
 

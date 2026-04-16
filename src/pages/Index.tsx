@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, FormEvent, useCallback } from "react";
 import PortfolioSection from "@/components/PortfolioSection";
 import LegalModal from "@/components/LegalModal";
-import SunsetParallax from "@/components/SunsetParallax";
+import SunsetBg from "@/components/SunsetParallax";
 
 const CONTACT_URL = "https://functions.poehali.dev/05e2f825-a9d7-46b4-990d-b9db281dcff5";
 
@@ -236,8 +236,6 @@ export default function Index() {
   const [scrolled, setScrolled] = useState(false);
   const [dark, setDark] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const heroBgRef = useRef<HTMLDivElement>(null);
-
   const [formData, setFormData] = useState({ name: "", phone: "", dates: "", message: "" });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -279,7 +277,6 @@ export default function Index() {
   };
 
   useReveal();
-  useParallax(heroBgRef);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -345,11 +342,7 @@ export default function Index() {
       {/* HERO */}
       <main id="main">
         <section className="sb-hero">
-          <div
-            className="sb-hero__bg"
-            ref={heroBgRef}
-            style={{ backgroundImage: `url('${HERO_IMG}')`, backgroundSize: "cover", backgroundPosition: "center" }}
-          />
+          <SunsetBg />
           <div className="sb-hero__overlay" />
           <div className="sb-hero__content">
             <div className="sb-hero__badge">
@@ -385,8 +378,6 @@ export default function Index() {
             <div className="sb-hero__scroll-line" />
           </div>
         </section>
-
-        <SunsetParallax />
 
         {/* STATS */}
         <div className="sb-stats-bar">

@@ -1,221 +1,168 @@
-import { useEffect, useRef } from "react";
-
-export default function SunsetParallax() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const skyRef     = useRef<SVGGElement>(null);
-  const sunRef     = useRef<SVGGElement>(null);
-  const glowRef    = useRef<SVGRadialGradientElement>(null);
-  const cloudsRef  = useRef<SVGGElement>(null);
-  const seaRef     = useRef<SVGGElement>(null);
-  const wavesRef   = useRef<SVGGElement>(null);
-  const glareRef   = useRef<SVGGElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    let raf = 0;
-    let lastScroll = -1;
-
-    const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        const rect = section.getBoundingClientRect();
-        const vh   = window.innerHeight;
-        // progress: 0 когда секция входит снизу, 1 когда уходит вверх
-        const progress = Math.max(0, Math.min(1, 1 - (rect.bottom / (vh + rect.height))));
-        if (Math.abs(progress - lastScroll) < 0.001) return;
-        lastScroll = progress;
-
-        const p = progress; // 0..1
-
-        // Небо — двигается медленно вверх
-        if (skyRef.current)
-          skyRef.current.style.transform = `translateY(${p * 18}px)`;
-
-        // Солнце — опускается к горизонту быстрее
-        if (sunRef.current)
-          sunRef.current.style.transform = `translateY(${p * 42}px)`;
-
-        // Ореол солнца — меняет размер
-        if (glowRef.current) {
-          const r = 18 + p * 14;
-          glowRef.current.setAttribute("r", String(r));
-        }
-
-        // Облака — плывут немного в сторону
-        if (cloudsRef.current)
-          cloudsRef.current.style.transform = `translate(${p * -28}px, ${p * 10}px)`;
-
-        // Море — чуть медленнее неба
-        if (seaRef.current)
-          seaRef.current.style.transform = `translateY(${p * 8}px)`;
-
-        // Волны — лёгкое смещение
-        if (wavesRef.current)
-          wavesRef.current.style.transform = `translateY(${p * -5}px)`;
-
-        // Блик на воде — меняет прозрачность
-        if (glareRef.current) {
-          glareRef.current.style.opacity = String(0.25 + p * 0.45);
-          glareRef.current.style.transform = `translateY(${p * -8}px) scaleY(${0.8 + p * 0.4})`;
-        }
-      });
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
-
+export default function SunsetBg() {
   return (
-    <div ref={sectionRef} className="sb-sunset" aria-hidden="true">
+    <div className="sb-sunset-bg" aria-hidden="true">
       <svg
-        className="sb-sunset__svg"
-        viewBox="0 0 1440 320"
+        className="sb-sunset-bg__svg"
+        viewBox="0 0 1440 900"
         preserveAspectRatio="xMidYMid slice"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          {/* Градиент неба — закатный */}
-          <linearGradient id="sbSkyGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor="#0d1b3e" />
-            <stop offset="35%"  stopColor="#1a3a6b" />
-            <stop offset="62%"  stopColor="#c75b2a" />
-            <stop offset="80%"  stopColor="#e8843a" />
-            <stop offset="100%" stopColor="#f5a84e" />
+          <linearGradient id="ssSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#060e24" />
+            <stop offset="30%"  stopColor="#0e2050" />
+            <stop offset="58%"  stopColor="#7a2a10" />
+            <stop offset="75%"  stopColor="#d4601a" />
+            <stop offset="88%"  stopColor="#f0902a" />
+            <stop offset="100%" stopColor="#f5b04a" />
           </linearGradient>
 
-          {/* Градиент моря */}
-          <linearGradient id="sbSeaGrad" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="ssSea" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%"   stopColor="#1a4a7a" />
-            <stop offset="40%"  stopColor="#0d2d55" />
-            <stop offset="100%" stopColor="#071829" />
+            <stop offset="50%"  stopColor="#0a2540" />
+            <stop offset="100%" stopColor="#040f1e" />
           </linearGradient>
 
-          {/* Ореол солнца */}
-          <radialGradient id="sbSunGlow" cx="50%" cy="50%" r="18%" gradientUnits="objectBoundingBox">
-            <stop offset="0%"   stopColor="#ffe066" stopOpacity="1" />
-            <stop offset="40%"  stopColor="#ffb347" stopOpacity="0.7" />
-            <stop offset="100%" stopColor="#ff6b2b" stopOpacity="0" />
+          <radialGradient id="ssSunCore" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stopColor="#fff9c4" />
+            <stop offset="45%"  stopColor="#ffe066" />
+            <stop offset="100%" stopColor="#ffb030" stopOpacity="0" />
           </radialGradient>
 
-          {/* Блик солнца на воде */}
-          <linearGradient id="sbGlareGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor="#ffcc66" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#ff8833" stopOpacity="0" />
-          </linearGradient>
-
-          <radialGradient id="sbGlareShape" cx="50%" cy="0%" r="50%">
-            <stop offset="0%"   stopColor="#ffd580" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="#ffd580" stopOpacity="0" />
+          <radialGradient id="ssSunHalo" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stopColor="#ff9020" stopOpacity="0.45" />
+            <stop offset="60%"  stopColor="#ff6010" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#ff4000" stopOpacity="0" />
           </radialGradient>
+
+          <radialGradient id="ssGlare" cx="50%" cy="0%" r="80%" gradientUnits="objectBoundingBox">
+            <stop offset="0%"   stopColor="#ffe880" stopOpacity="0.7" />
+            <stop offset="100%" stopColor="#ffa030" stopOpacity="0" />
+          </radialGradient>
+
+          <filter id="ssBlur" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="8" />
+          </filter>
+          <filter id="ssBlurSm" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" />
+          </filter>
         </defs>
 
         {/* ── НЕБО ── */}
-        <g ref={skyRef}>
-          <rect width="1440" height="320" fill="url(#sbSkyGrad)" />
+        <rect width="1440" height="900" fill="url(#ssSky)" />
+
+        {/* ── ЗВЁЗДЫ (вверху, едва заметные) ── */}
+        {[
+          [120,40],[300,25],[480,55],[650,18],[820,44],[1010,28],[1180,50],[1320,20],[80,70],[420,35],[780,15],[1100,65],[200,85],[560,75],[950,88],[1380,42]
+        ].map(([cx, cy], i) => (
+          <circle key={i} cx={cx} cy={cy} r={i % 3 === 0 ? 1.2 : 0.8} fill="white" opacity={0.25 + (i % 4) * 0.1} className="ss-star" style={{ animationDelay: `${i * 0.4}s` }} />
+        ))}
+
+        {/* ── ОБЛАКА закатные ── */}
+        <g className="ss-clouds-slow">
+          <ellipse cx="200"  cy="200" rx="190" ry="28" fill="#b04020" opacity="0.18" filter="url(#ssBlur)" />
+          <ellipse cx="580"  cy="175" rx="240" ry="32" fill="#c05525" opacity="0.16" filter="url(#ssBlur)" />
+          <ellipse cx="1050" cy="190" rx="200" ry="26" fill="#b83d18" opacity="0.17" filter="url(#ssBlur)" />
+          <ellipse cx="1340" cy="215" rx="160" ry="22" fill="#d06030" opacity="0.13" filter="url(#ssBlur)" />
+        </g>
+        <g className="ss-clouds-fast">
+          <ellipse cx="380"  cy="140" rx="140" ry="18" fill="#e07840" opacity="0.12" filter="url(#ssBlur)" />
+          <ellipse cx="860"  cy="155" rx="180" ry="22" fill="#d46535" opacity="0.14" filter="url(#ssBlur)" />
+          <ellipse cx="1230" cy="130" rx="120" ry="16" fill="#c85528" opacity="0.11" filter="url(#ssBlur)" />
         </g>
 
-        {/* ── ОБЛАКА ── */}
-        <g ref={cloudsRef} className="sb-sunset__clouds">
-          <ellipse cx="180"  cy="62"  rx="110" ry="18" fill="white" opacity="0.06" />
-          <ellipse cx="340"  cy="48"  rx="75"  ry="14" fill="white" opacity="0.05" />
-          <ellipse cx="900"  cy="55"  rx="140" ry="20" fill="white" opacity="0.05" />
-          <ellipse cx="1150" cy="40"  rx="90"  ry="15" fill="white" opacity="0.04" />
-          <ellipse cx="1330" cy="70"  rx="80"  ry="13" fill="white" opacity="0.06" />
-
-          {/* Розово-оранжевые закатные облака */}
-          <ellipse cx="260"  cy="95"  rx="160" ry="24" fill="#e07040" opacity="0.18" />
-          <ellipse cx="520"  cy="80"  rx="120" ry="18" fill="#d06030" opacity="0.13" />
-          <ellipse cx="820"  cy="88"  rx="200" ry="28" fill="#c85528" opacity="0.15" />
-          <ellipse cx="1180" cy="76"  rx="150" ry="22" fill="#d96535" opacity="0.12" />
-        </g>
+        {/* ── БОЛЬШОЙ ОРЕОЛ СОЛНЦА ── */}
+        <ellipse cx="720" cy="520" rx="340" ry="160" fill="url(#ssSunHalo)" filter="url(#ssBlur)" />
+        <ellipse cx="720" cy="520" rx="180" ry="90"  fill="#ff7020" opacity="0.18" filter="url(#ssBlurSm)" />
 
         {/* ── СОЛНЦЕ ── */}
-        <g ref={sunRef}>
-          {/* Большой ореол */}
-          <ellipse cx="720" cy="168" rx="120" ry="60" fill="#ff8c30" opacity="0.12" />
-          <ellipse cx="720" cy="168" rx="72"  ry="36" fill="#ffaa44" opacity="0.18" />
+        <g className="ss-sun">
+          {/* Мягкое свечение */}
+          <circle cx="720" cy="520" r="90"  fill="url(#ssSunCore)" opacity="0.25" filter="url(#ssBlurSm)" />
           {/* Диск */}
-          <circle  cx="720" cy="168" r="28" fill="#ffe066" opacity="0.95" />
-          <circle  cx="720" cy="168" r="22" fill="#fff4b0" opacity="0.9" />
+          <circle cx="720" cy="520" r="48"  fill="#ffe566" opacity="0.92" />
+          <circle cx="720" cy="520" r="36"  fill="#fff8b0" opacity="0.95" />
           {/* Лучи */}
           {[0,30,60,90,120,150,180,210,240,270,300,330].map((deg) => {
             const rad = (deg * Math.PI) / 180;
+            const main = deg % 90 === 0;
             return (
               <line
                 key={deg}
-                x1={720 + Math.cos(rad) * 30}
-                y1={168 + Math.sin(rad) * 30}
-                x2={720 + Math.cos(rad) * 46}
-                y2={168 + Math.sin(rad) * 46}
+                x1={720 + Math.cos(rad) * 52}
+                y1={520 + Math.sin(rad) * 52}
+                x2={720 + Math.cos(rad) * (main ? 76 : 68)}
+                y2={520 + Math.sin(rad) * (main ? 76 : 68)}
                 stroke="#ffe899"
-                strokeWidth={deg % 90 === 0 ? 2.5 : 1.5}
+                strokeWidth={main ? 2.5 : 1.5}
                 strokeLinecap="round"
-                opacity={0.55}
+                opacity={0.6}
+                className="ss-rays"
+                style={{ animationDelay: `${deg / 360}s` }}
               />
             );
           })}
         </g>
 
-        {/* ── ЛИНИЯ ГОРИЗОНТА — размытый переход ── */}
-        <rect x="0" y="152" width="1440" height="32" fill="url(#sbSeaGrad)" opacity="0.45" />
+        {/* ── ГОРИЗОНТ — переход небо/море ── */}
+        <rect x="0" y="500" width="1440" height="40" fill="url(#ssSea)" opacity="0.5" filter="url(#ssBlurSm)" />
 
         {/* ── МОРЕ ── */}
-        <g ref={seaRef}>
-          <rect x="0" y="170" width="1440" height="150" fill="url(#sbSeaGrad)" />
-          {/* Плавная волнистая граница моря */}
-          <path
-            d="M0,170 Q120,162 240,170 Q360,178 480,170 Q600,162 720,170 Q840,178 960,170 Q1080,162 1200,170 Q1320,178 1440,170 L1440,175 Q1320,183 1200,175 Q1080,167 960,175 Q840,183 720,175 Q600,167 480,175 Q360,183 240,175 Q120,167 0,175 Z"
-            fill="#1a4a7a"
-            opacity="0.6"
-          />
-        </g>
+        <rect x="0" y="520" width="1440" height="380" fill="url(#ssSea)" />
+
+        {/* Волнистая граница */}
+        <path
+          d="M0,520 Q180,510 360,520 Q540,530 720,520 Q900,510 1080,520 Q1260,530 1440,520 L1440,528 Q1260,538 1080,528 Q900,518 720,528 Q540,538 360,528 Q180,518 0,528 Z"
+          fill="#2060a0"
+          opacity="0.4"
+        />
 
         {/* ── БЛИК СОЛНЦА НА ВОДЕ ── */}
-        <g ref={glareRef} style={{ opacity: 0.25 }}>
-          <ellipse cx="720" cy="210" rx="44" ry="100" fill="url(#sbGlareShape)" />
-          <ellipse cx="720" cy="230" rx="28" ry="70"  fill="#ffd580" opacity="0.3" />
-          {/* Мелкие блики-черточки */}
-          {[-36,-24,-14,-6,0,6,14,24,36].map((dx, i) => (
+        <g className="ss-glare">
+          <ellipse cx="720" cy="600" rx="60"  ry="200" fill="url(#ssGlare)" />
+          <ellipse cx="720" cy="560" rx="30"  ry="120" fill="#ffd070" opacity="0.22" />
+          {[-52,-36,-22,-10,0,10,22,36,52].map((dx, i) => (
             <ellipse
               key={i}
-              cx={720 + dx * (1 + Math.abs(dx) * 0.04)}
-              cy={195 + Math.abs(dx) * 1.2}
-              rx={3 - Math.abs(dx) * 0.04}
-              ry={1}
-              fill="#fff8c0"
-              opacity={0.55 - Math.abs(dx) * 0.012}
+              cx={720 + dx * (1 + Math.abs(dx) * 0.02)}
+              cy={542 + Math.abs(dx) * 1.4}
+              rx={Math.max(0.5, 3.5 - Math.abs(dx) * 0.055)}
+              ry={1.2}
+              fill="#fff0a0"
+              opacity={0.65 - Math.abs(dx) * 0.011}
             />
           ))}
         </g>
 
-        {/* ── ВОЛНЫ ── */}
-        <g ref={wavesRef}>
-          <path d="M0,200 Q90,194 180,200 Q270,206 360,200 Q450,194 540,200 Q630,206 720,200 Q810,194 900,200 Q990,206 1080,200 Q1170,194 1260,200 Q1350,206 1440,200" stroke="#4a8ab5" strokeWidth="1.5" fill="none" opacity="0.35" />
-          <path d="M0,212 Q80,207 160,212 Q240,217 320,212 Q400,207 480,212 Q560,217 640,212 Q720,207 800,212 Q880,217 960,212 Q1040,207 1120,212 Q1200,217 1280,212 Q1360,207 1440,212" stroke="#5a9ac8" strokeWidth="1" fill="none" opacity="0.25" />
-          <path d="M0,226 Q100,221 200,226 Q300,231 400,226 Q500,221 600,226 Q700,231 800,226 Q900,221 1000,226 Q1100,231 1200,226 Q1300,221 1400,226 L1440,226" stroke="#6aaad8" strokeWidth="1" fill="none" opacity="0.2" />
+        {/* ── ВОЛНЫ (3 слоя) ── */}
+        <g className="ss-wave ss-wave--1">
+          <path d="M0,560 Q90,553 180,560 Q270,567 360,560 Q450,553 540,560 Q630,567 720,560 Q810,553 900,560 Q990,567 1080,560 Q1170,553 1260,560 Q1350,567 1440,560" stroke="#3a7ab5" strokeWidth="1.8" fill="none" opacity="0.4" />
+        </g>
+        <g className="ss-wave ss-wave--2">
+          <path d="M0,576 Q80,570 160,576 Q240,582 320,576 Q400,570 480,576 Q560,582 640,576 Q720,570 800,576 Q880,582 960,576 Q1040,570 1120,576 Q1200,582 1280,576 Q1360,570 1440,576" stroke="#4a8ec8" strokeWidth="1.2" fill="none" opacity="0.28" />
+        </g>
+        <g className="ss-wave ss-wave--3">
+          <path d="M0,594 Q100,588 200,594 Q300,600 400,594 Q500,588 600,594 Q700,600 800,594 Q900,588 1000,594 Q1100,600 1200,594 Q1300,588 1400,594 L1440,594" stroke="#5aa2d8" strokeWidth="0.9" fill="none" opacity="0.2" />
         </g>
 
-        {/* ── СИЛУЭТ БЕРЕГА ── */}
+        {/* ── БЕРЕГ (силуэт) ── */}
         <path
-          d="M0,310 L0,275 Q60,270 100,265 Q160,258 220,270 Q260,278 300,268 Q360,255 440,262 Q500,268 560,260 Q620,252 700,258 Q760,263 820,255 Q900,245 980,252 Q1040,258 1100,250 Q1160,242 1240,248 Q1300,253 1360,245 Q1400,240 1440,244 L1440,310 Z"
-          fill="#071422"
-          opacity="0.7"
+          d="M0,900 L0,780 Q40,772 90,765 Q160,755 230,768 Q280,778 340,762 Q420,744 510,752 Q580,758 650,746 Q730,733 820,740 Q890,746 970,735 Q1060,722 1150,730 Q1220,736 1290,724 Q1360,712 1440,718 L1440,900 Z"
+          fill="#040e1c"
+          opacity="0.85"
+        />
+        {/* Тёмные деревья/скалы на берегу */}
+        <path
+          d="M0,900 L0,800 Q50,798 80,788 L95,760 L110,788 Q150,780 190,785 L200,900 Z"
+          fill="#030c18"
+          opacity="0.6"
+        />
+        <path
+          d="M1280,900 L1280,798 Q1320,790 1350,778 L1368,750 L1386,778 Q1410,772 1440,776 L1440,900 Z"
+          fill="#030c18"
+          opacity="0.6"
         />
       </svg>
-
-      {/* Анимированные волны CSS поверх */}
-      <div className="sb-sunset__wave-anim">
-        <div className="sb-sunset__wave sb-sunset__wave--1" />
-        <div className="sb-sunset__wave sb-sunset__wave--2" />
-        <div className="sb-sunset__wave sb-sunset__wave--3" />
-      </div>
     </div>
   );
 }
