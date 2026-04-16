@@ -422,7 +422,7 @@ export default function Index() {
                   ))}
                 </div>
               </div>
-              <div className="sb-problem__visual reveal reveal-d2">
+              <div className="sb-problem__visual reveal reveal-d2 reveal-img">
                 <img src={BANYA_IMG} alt="Баня у Японского моря" width="600" height="750" loading="lazy" />
                 <div className="sb-problem__visual-badge">
                   <div className="sb-problem__visual-badge-title">«Приехали на 3 дня — остались на 10»</div>
@@ -445,7 +445,7 @@ export default function Index() {
               Мы открываемся 1 июня — и каждый год наши гости возвращаются.
             </p>
             <div className="sb-place__bento">
-              <div className="sb-bento-card sb-bento-card--tall reveal">
+              <div className="sb-bento-card sb-bento-card--tall reveal reveal-img">
                 <img className="sb-bento-card__img" src={HERO_IMG} alt="Панорамный вид на бухту Японского моря" width="500" height="800" loading="lazy" />
                 <div className="sb-bento-card__overlay" />
                 <div className="sb-bento-card__label">
@@ -459,7 +459,7 @@ export default function Index() {
                 [HERO_IMG, "Водные активности", "SUP, каяки, снорклинг"],
                 [TENT_IMG, "Гастрономия", "Морепродукты с лодки"],
               ] as const).map(([src, label, sub], i) => (
-                <div key={label} className={`sb-bento-card reveal reveal-d${(i % 2) + 1}`}>
+                <div key={label} className={`sb-bento-card reveal reveal-img reveal-d${(i % 2) + 1}`}>
                   <img className="sb-bento-card__img" src={src} alt={label} width="500" height="300" loading="lazy" />
                   <div className="sb-bento-card__overlay" />
                   <div className="sb-bento-card__label">

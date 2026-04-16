@@ -1798,6 +1798,25 @@ a {
   line-height: 1.7;
 }
 
+/* ===== REVEAL IMG (clip bottom-to-top) ===== */
+.reveal-img {
+  overflow: hidden;
+}
+.reveal-img img {
+  display: block;
+  width: 100%;
+  transform: translateY(40px) scale(1.06);
+  opacity: 0;
+  transition:
+    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 1s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
+}
+.reveal-img.visible img {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
 /* ===== REVEAL ===== */
 .reveal {
   opacity: 0;
