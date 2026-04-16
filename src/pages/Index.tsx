@@ -21,7 +21,7 @@ function useReveal() {
           }
         });
       },
-      { threshold: 0.12 }
+      { threshold: 0.07, rootMargin: "0px 0px -40px 0px" }
     );
     els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
@@ -387,7 +387,7 @@ export default function Index() {
         </section>
 
         {/* STATS */}
-        <div className="sb-stats-bar">
+        <div className="sb-stats-bar reveal">
           <div className="sb-stats-bar__inner">
             {[["4.9", "Рейтинг гостей"], ["70%", "Возвращаются снова"], ["8+", "Лет на рынке"], ["200м", "До пляжа"], ["5000+", "Довольных гостей"]].map(([num, label]) => (
               <div key={label} className="sb-stats-bar__item">
