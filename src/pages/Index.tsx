@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, FormEvent, useCallback } from "react";
 import PortfolioSection from "@/components/PortfolioSection";
 import LegalModal from "@/components/LegalModal";
+import PromoModal from "@/components/PromoModal";
 
 const CONTACT_URL = "https://functions.poehali.dev/05e2f825-a9d7-46b4-990d-b9db281dcff5";
 
@@ -696,6 +697,7 @@ export default function Index() {
       </footer>
 
       <LegalModal open={legalOpen} onClose={() => setLegalOpen(null)} />
+      <PromoModal />
     </>
   );
 }
